@@ -1,0 +1,4 @@
+name: standard-library++
+include: src
+depend:
+  standard-library
