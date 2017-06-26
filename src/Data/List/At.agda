@@ -3,6 +3,8 @@ module Data.List.At where
 open import Data.Nat
 open import Data.List
 open import Data.List.All hiding (map; lookup)
+open import Data.List.Any hiding (map)
+open Membership-≡
 open import Data.Fin hiding (_<_)
 open import Data.Maybe hiding (map; All)
 open import Data.Product hiding (map)
@@ -28,6 +30,16 @@ lookup : ∀ {a} {A : Set a} → (l : List A) → Fin (length l) → A
 lookup [] ()
 lookup (x ∷ l) zero = x
 lookup (x ∷ l) (suc p) = lookup l p
+
+at-lookup : ∀ {a}{A : Set a} → (l : List A) → (i : Fin (length l)) → l [ toℕ i ]= (lookup l i)
+at-lookup [] ()
+at-lookup (x ∷ l) zero = refl
+at-lookup (x ∷ l) (suc i) = at-lookup l i
+
+lookup-in : ∀ {a}{A : Set a} → (l : List A) → (i : Fin (length l)) → (lookup l i) ∈ l
+lookup-in [] ()
+lookup-in (x ∷ l) zero = here refl
+lookup-in (x ∷ l) (suc i) = there (lookup-in l i)
 
 dec-lookup : ∀ {a} {A : Set a} → (i : ℕ) → (l : List A) → Dec (∃ λ x → l [ i ]= x)
 dec-lookup _ [] = no (λ{ (_ , ())})

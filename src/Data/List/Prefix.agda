@@ -51,3 +51,20 @@ xs⊒ys[i] {i = suc i} p (x ∷ a) = xs⊒ys[i] p a
 ∈-⊒ () []
 ∈-⊒ (here px) (x ∷ q) = here px
 ∈-⊒ (there p) (x ∷ q) = there (∈-⊒ p q)
+
+open import Relation.Binary.Core
+open import Relation.Nullary
+
+module Decidable {a}{A : Set a}(_≟_ : Decidable (_≡_ {A = A})) where
+
+  _⊑?_ : Decidable (_⊑_ {A = A})
+  [] ⊑? _ = yes []
+  (x ∷ xs) ⊑? [] = no (λ ())
+  (x ∷ xs) ⊑? (y ∷ ys) with x ≟ y
+  (x ∷ xs) ⊑? (y ∷ ys) | no ¬p = no (λ{ (.x ∷ z) → ¬p refl })
+  (x ∷ xs) ⊑? (.x ∷ ys) | yes refl with xs ⊑? ys
+  ... | yes px = yes (x ∷ px)
+  ... | no ¬px = no (λ{ (.x ∷ px) → ¬px px})
+
+  _⊒?_ : Decidable (_⊒_ {A = A})
+  xs ⊒? ys = ys ⊑? xs

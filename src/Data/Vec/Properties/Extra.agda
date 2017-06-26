@@ -1,4 +1,4 @@
-module Extensions.Vec where
+module Data.Vec.Properties.Extra where
 
 open import Data.Product hiding (map; zip)
 open import Data.Nat
@@ -10,6 +10,7 @@ open import Data.List as L using ()
 open import Data.List.Properties
 open import Relation.Binary.HeterogeneousEquality as H using ()
 open ≡-Reasoning public
+open import Function
 
 private
   module HR = H.≅-Reasoning
