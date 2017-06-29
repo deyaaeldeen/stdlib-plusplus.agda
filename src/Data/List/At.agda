@@ -17,6 +17,11 @@ maybe-lookup n [] = nothing
 maybe-lookup zero (x ∷ μ) = just x
 maybe-lookup (suc n) (x ∷ μ) = maybe-lookup n μ
 
+maybe-write : ∀ {a}{A : Set a} → ℕ → A →  List A → Maybe (List A)
+maybe-write n _ [] = nothing
+maybe-write zero v (x ∷ z) = just (v ∷ z)
+maybe-write (suc n) v (x ∷ z) = maybe-write n v z
+
 _[_]=_ : ∀ {a}{A : Set a} → List A → ℕ → A → Set _
 l [ i ]= x = maybe-lookup i l ≡ just x
 
