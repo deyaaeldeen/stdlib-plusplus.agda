@@ -4,7 +4,7 @@ open import Relation.Binary.PropositionalEquality
 open import Data.Nat
 open import Data.List
 open import Data.List.Any
-open Membership-≡
+open import Data.List.Any.Membership.Propositional
 open import Data.List.Properties.Extra
 open import Data.List.At
 open import Data.List.All
