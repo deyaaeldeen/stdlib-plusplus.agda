@@ -42,6 +42,6 @@ _All[_]≔'_ [] ()
 _All[_]≔'_ {xs = .(_ ∷ _)} (px ∷ xs) (here refl) px' = px' ∷ xs
 _All[_]≔'_ {xs = .(_ ∷ _)} (px ∷ xs) (there t) px' = px ∷ (xs All[ t ]≔' px')
 
-all-∷ʳ : ∀ {p}{l : List A} {x} {P : A → Set p} → All P l → P x → All P (l ∷ʳ x)
-all-∷ʳ [] q = q ∷ []
-all-∷ʳ (px ∷ p) q = px ∷ (all-∷ʳ p q)
+_all-∷ʳ_ : ∀ {p}{l : List A} {x} {P : A → Set p} → All P l → P x → All P (l ∷ʳ x)
+_all-∷ʳ_ [] q = q ∷ []
+_all-∷ʳ_ (px ∷ p) q = px ∷ (p all-∷ʳ q)
