@@ -52,6 +52,7 @@ xs⊒ys[i] {i = suc i} p (x ∷ a) = xs⊒ys[i] p a
 ∈-⊒ (here px) (x ∷ q) = here px
 ∈-⊒ (there p) (x ∷ q) = there (∈-⊒ p q)
 
+open import Relation.Binary
 open import Relation.Binary.Core
 open import Relation.Nullary
 
@@ -68,3 +69,11 @@ module Decidable {a}{A : Set a}(_≟_ : Decidable (_≡_ {A = A})) where
 
   _⊒?_ : Decidable (_⊒_ {A = A})
   xs ⊒? ys = ys ⊑? xs
+
+import Relation.Binary.PropositionalEquality.Core as PC
+⊑-preorder : ∀ {ℓ}{A : Set ℓ} → Preorder _ _ _
+⊑-preorder {A = A} = record {
+  Carrier = List A ; _≈_ = _≡_ ; _∼_ = _⊑_ ;
+  isPreorder = record {
+    isEquivalence = PC.isEquivalence ;
+    reflexive = λ{ refl → ⊑-refl } ; trans = ⊑-trans } }
