@@ -22,6 +22,17 @@ data _⊑_ {a} {A : Set a} : List A → List A → Set where
 ⊑-trans [] _ = []
 ⊑-trans (x ∷ p) (.x ∷ q) = x ∷ ⊑-trans p q
 
+open import Relation.Binary.PropositionalEquality
+
+⊑-trans-refl : ∀ {a}{A : Set a}{k l}{xs : k ⊑ l} → ⊑-trans {A = A} ⊑-refl xs ≡ xs
+⊑-trans-refl {xs = []} = refl
+⊑-trans-refl {xs = x ∷ xs} = cong (λ u → x ∷ u) ⊑-trans-refl
+
+⊑-trans-assoc : ∀ {a}{A : Set a}{k l m n : List A}{p : k ⊑ l}{q : l ⊑ m}{r : m ⊑ n} →
+                ⊑-trans p (⊑-trans q r) ≡ ⊑-trans (⊑-trans p q) r
+⊑-trans-assoc {p = []} {q} = refl
+⊑-trans-assoc {p = x ∷ p} {.x ∷ q} {.x ∷ r} = cong (λ u → x ∷ u) ⊑-trans-assoc
+
 -- list extensions; reverse prefix relation
 infix 4 _⊒_
 _⊒_ : ∀ {a} {A : Set a} → List A → List A → Set
