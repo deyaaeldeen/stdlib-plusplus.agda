@@ -28,6 +28,10 @@ open import Relation.Binary.PropositionalEquality
 ⊑-trans-refl {xs = []} = refl
 ⊑-trans-refl {xs = x ∷ xs} = cong (λ u → x ∷ u) ⊑-trans-refl
 
+⊑-trans-refl' : ∀ {a}{A : Set a}{k l}{xs : k ⊑ l} → ⊑-trans {A = A} xs ⊑-refl ≡ xs
+⊑-trans-refl' {xs = []} = refl
+⊑-trans-refl' {xs = x ∷ xs} = cong (λ u → x ∷ u) ⊑-trans-refl'
+
 ⊑-trans-assoc : ∀ {a}{A : Set a}{k l m n : List A}{p : k ⊑ l}{q : l ⊑ m}{r : m ⊑ n} →
                 ⊑-trans p (⊑-trans q r) ≡ ⊑-trans (⊑-trans p q) r
 ⊑-trans-assoc {p = []} {q} = refl
