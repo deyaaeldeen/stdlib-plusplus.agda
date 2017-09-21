@@ -24,6 +24,10 @@ data _⊑_ {a} {A : Set a} : List A → List A → Set where
 
 open import Relation.Binary.PropositionalEquality
 
+⊑-unique : ∀ {a}{A : Set a}{k l : List A}(xs ys : k ⊑ l) → xs ≡ ys
+⊑-unique [] [] = refl
+⊑-unique (x ∷ xs) (.x ∷ ys) = cong (λ u → x ∷ u) (⊑-unique xs ys)
+
 ⊑-trans-refl : ∀ {a}{A : Set a}{k l}{xs : k ⊑ l} → ⊑-trans {A = A} ⊑-refl xs ≡ xs
 ⊑-trans-refl {xs = []} = refl
 ⊑-trans-refl {xs = x ∷ xs} = cong (λ u → x ∷ u) ⊑-trans-refl
