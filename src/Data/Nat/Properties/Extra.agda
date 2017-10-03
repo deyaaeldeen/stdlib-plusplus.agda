@@ -1,10 +1,9 @@
 
-module Extensions.Nat where
+module Data.Nat.Properties.Extra where
 
-open import Prelude
 open import Data.Nat.Base
-open import Data.Nat.Properties.Simple
 open import Data.Nat.Properties
+open import Relation.Binary.PropositionalEquality
 
 m+1+n≡1+m+n : ∀ m n → m + suc n ≡ suc (m + n)
 m+1+n≡1+m+n zero    n = refl

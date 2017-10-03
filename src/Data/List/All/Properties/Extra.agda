@@ -7,9 +7,29 @@ open import Data.List.Any
 open import Data.List.Any.Membership.Propositional
 open import Data.List.Properties.Extra
 open import Data.List.At
-open import Data.List.All
+open import Data.List.All as All
 open import Data.List.All.Properties
 open import Data.Product
+open import Function
+
+map-cong : ∀ {p q}{P : A → Set p}{Q : A → Set q}{l : List A} (ps : All P l)
+           {f g : ∀ {x : A} → P x → Q x} →
+           (∀ (x : A)(p : P x) → f {x} p ≡ g {x} p) →
+           All.map f ps ≡ All.map g ps
+map-cong [] _ = refl
+map-cong (px ∷ ps) peq = cong₂ _∷_ (peq _ px) (map-cong ps peq)
+
+map-id : ∀ {p}{P : A → Set p}{l : List A} (ps : All P l) {f : ∀ {x : A} → P x → P x} →
+         (∀ (x : A)(p : P x) → f {x} p ≡ p) →
+         All.map f ps ≡ ps
+map-id [] feq = refl
+map-id (px ∷ ps) feq = cong₂ _∷_ (feq _ px) (map-id ps feq)
+
+map-map : ∀ {p q r}{P : A → Set p}{Q : A → Set q}{R : A → Set r}{l : List A}(ps : All P l)
+          {f : ∀ {x : A} → P x → Q x}{g : ∀ {x : A} → Q x → R x} →
+          All.map g (All.map f ps) ≡ All.map (g ∘ f) ps
+map-map [] = refl
+map-map (px ∷ ps) = cong₂ _∷_ refl (map-map ps)
 
 drop-all : ∀ {p}{P : A → Set p}{l : List A} n → All P l → All P (drop n l)
 drop-all zero px = px
