@@ -66,6 +66,24 @@ _all-∷ʳ_ : ∀ {p}{l : List A} {x} {P : A → Set p} → All P l → P x → 
 _all-∷ʳ_ [] q = q ∷ []
 _all-∷ʳ_ (px ∷ p) q = px ∷ (p all-∷ʳ q)
 
+All≔'∘map : ∀ {p q}{P : A → Set p}{Q : A → Set q}{xs : List A} {x}(pxs : All P xs)(e : x ∈ xs)(px : P x)(f : ∀ {x} → P x → Q x) →
+            (All.map f pxs) All[ e ]≔' (f px) ≡ All.map f (pxs All[ e ]≔' px)
+All≔'∘map [] ()
+All≔'∘map (px ∷ pxs) (here refl) qx f = refl
+All≔'∘map (px ∷ pxs) (there e) qx f = cong₂ _∷_ refl (All≔'∘map pxs e qx f)
+
+all-∷ʳ∘map : ∀ {p q}{P : A → Set p}{Q : A → Set q}{xs : List A} {x}(pxs : All P xs)(px : P x)(f : ∀ {x} → P x → Q x) →
+             (All.map f pxs) all-∷ʳ (f px) ≡ All.map f (pxs all-∷ʳ px)
+all-∷ʳ∘map [] px f = refl
+all-∷ʳ∘map (px₁ ∷ pxs) px f = cong₂ _∷_ refl (all-∷ʳ∘map pxs px f)
+
+lookup∘map : ∀ {p q}{P : A → Set p}{Q : A → Set q}{xs : List A} {x}(pxs : All P xs)(e : x ∈ xs)(f : ∀ {x} → P x → Q x) →
+             All.lookup (All.map f pxs) e ≡ f (All.lookup pxs e)
+lookup∘map [] ()
+lookup∘map (px ∷ pxs) (here refl) f = refl
+lookup∘map (px ∷ pxs) (there e) f = lookup∘map pxs e f
+
+
 erase : ∀ {p b}{P : A → Set p}{l : List A}{B : Set b} → (∀ {x} → P x → B) → All P l → List B
 erase f [] = []
 erase f (px ∷ xs₁) = f px ∷ erase f xs₁

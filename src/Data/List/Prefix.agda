@@ -75,6 +75,10 @@ xs⊒ys[i] {i = suc i} p (x ∷ a) = xs⊒ys[i] p a
 ∈-⊒-refl {p = here px} = refl
 ∈-⊒-refl {p = there p} = cong there ∈-⊒-refl
 
+∈-⊒-trans : ∀ {a}{A : Set a}{xs ys zs : List A}{x}{p : x ∈ xs}(q : ys ⊒ xs)(r : zs ⊒ ys) → ∈-⊒ p (⊑-trans q r) ≡ ∈-⊒ (∈-⊒ p q) r
+∈-⊒-trans {p = here px} (x ∷ l) (.x ∷ r) = refl
+∈-⊒-trans {p = there p} (x ∷ l) (.x ∷ r) = cong there (∈-⊒-trans l r)
+
 open import Relation.Binary
 open import Relation.Binary.Core
 open import Relation.Nullary
