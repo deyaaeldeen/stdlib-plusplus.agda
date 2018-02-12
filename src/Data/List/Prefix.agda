@@ -104,3 +104,10 @@ import Relation.Binary.PropositionalEquality.Core as PC
   isPreorder = record {
     isEquivalence = PC.isEquivalence ;
     reflexive = λ{ refl → ⊑-refl } ; trans = ⊑-trans } }
+
+⊒-preorder : ∀ {ℓ}{A : Set ℓ} → Preorder _ _ _
+⊒-preorder {A = A} = record {
+  Carrier = List A ; _≈_ = _≡_ ; _∼_ = _⊒_ ;
+  isPreorder = record {
+    isEquivalence = PC.isEquivalence ;
+    reflexive = λ{ refl → ⊑-refl } ; trans = λ p q → ⊑-trans q p } }
