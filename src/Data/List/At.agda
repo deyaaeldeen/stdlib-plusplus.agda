@@ -31,11 +31,6 @@ l [ i ]= x = maybe-lookup i l ≡ just x
 []=-map zero (x ∷ l) refl = λ f → refl
 []=-map (suc i) (x ∷ l) p = []=-map i l p
 
-lookup : ∀ {a} {A : Set a} → (l : List A) → Fin (length l) → A
-lookup [] ()
-lookup (x ∷ l) zero = x
-lookup (x ∷ l) (suc p) = lookup l p
-
 at-lookup : ∀ {a}{A : Set a} → (l : List A) → (i : Fin (length l)) → l [ toℕ i ]= (lookup l i)
 at-lookup [] ()
 at-lookup (x ∷ l) zero = refl
