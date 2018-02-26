@@ -41,6 +41,10 @@ open import Relation.Binary.PropositionalEquality
 ⊑-trans-assoc {p = []} {q} = refl
 ⊑-trans-assoc {p = x ∷ p} {.x ∷ q} {.x ∷ r} = cong (λ u → x ∷ u) ⊑-trans-assoc
 
+remainder : ∀ {a}{A : Set a}{xs ys : List A} → xs ⊑ ys → List A
+remainder ([] {ys}) = ys
+remainder (x ∷ xs) = remainder xs
+
 -- list extensions; reverse prefix relation
 infix 4 _⊒_
 _⊒_ : ∀ {a} {A : Set a} → List A → List A → Set
