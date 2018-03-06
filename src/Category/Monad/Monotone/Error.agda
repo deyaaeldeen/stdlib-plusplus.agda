@@ -23,13 +23,12 @@ ErrorT M P = M (λ i → Exc ⊎ P i)
 
 Error = ErrorT Identity
 
-record ErrorMonad M ⦃ Mon : RawMPMonad M ⦄ : Set (suc i) where
-  open RawMPMonad Mon
+record ErrorMonad (M : Pt I i) : Set (suc i) where
   field
     throw : ∀ {P i} → Exc → M P i
     catch : ∀ {P}   → M P ⊆ ((const Exc ↗ M P) ⇒ M P)
 
-module _ M ⦃ Mon : RawMPMonad M ⦄ where
+module _ {M}⦃ Mon : RawMPMonad M ⦄ where
   private module M = RawMPMonad Mon
 
   instance

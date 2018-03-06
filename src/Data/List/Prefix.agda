@@ -1,5 +1,6 @@
 module Data.List.Prefix where
 
+open import Level
 open import Data.Nat
 open import Data.List.At
 open import Data.List.Any hiding (map)
@@ -10,7 +11,7 @@ open import Data.List
 
 -- prefix predicate for lists
 infix 4 _⊑_
-data _⊑_ {a} {A : Set a} : List A → List A → Set where
+data _⊑_ {a} {A : Set a} : List A → List A → Set a where
   [] : ∀ {ys} → [] ⊑ ys
   _∷_ : ∀ x {xs ys} → xs ⊑ ys → x ∷ xs ⊑ x ∷ ys
 
@@ -47,7 +48,7 @@ remainder (x ∷ xs) = remainder xs
 
 -- list extensions; reverse prefix relation
 infix 4 _⊒_
-_⊒_ : ∀ {a} {A : Set a} → List A → List A → Set
+_⊒_ : ∀ {a} {A : Set a} → List A → List A → Set a
 xs ⊒ ys = ys ⊑ xs
 
 -- appending to a list gives a list extension;
@@ -102,7 +103,7 @@ module Decidable {a}{A : Set a}(_≟_ : Decidable (_≡_ {A = A})) where
   xs ⊒? ys = ys ⊑? xs
 
 import Relation.Binary.PropositionalEquality.Core as PC
-⊑-preorder : ∀ {ℓ}{A : Set ℓ} → Preorder _ _ _
+⊑-preorder : ∀ {ℓ}{A : Set ℓ} → Preorder ℓ ℓ ℓ
 ⊑-preorder {A = A} = record {
   Carrier = List A ; _≈_ = _≡_ ; _∼_ = _⊑_ ;
   isPreorder = record {

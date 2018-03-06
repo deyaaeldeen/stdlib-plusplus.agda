@@ -21,33 +21,24 @@ MST M P = H ⇒ (λ i → M (∃ λ j → i ≤ j × H j × P j))
 MSt : Pt I ℓ
 MSt = MST Identity
 
-record StateMonad M ⦃ Mon : RawMPMonad M ⦄ : Set (suc ℓ) where
-  open RawMPMonad Mon
+record StateMonad (M : Pt I ℓ) : Set (suc ℓ) where
   field
-    get : ∀ {i} → M H i
-    put : H ⊆ M (λ i → Lift ⊤)
+    runState : ∀ {P} → (H ↗ H ∩ P) ⊆ M P
 
-  state : (H ↗ H) ⊆ M (λ i → Lift ⊤)
-  state f = do
-    s , f' ← _^_ {Q = H ↗ H} get f
-    let s' = f' ≤-refl s
-    put s'
+  get : ∀ {i} → M H i
+  get = runState λ _ μ → μ , μ
 
-  puts = state
-
-module _ {M} ⦃ Mon : RawMonad {ℓ} M ⦄ where
-
+module _ {M}⦃ Mon : RawMonad {ℓ} M ⦄ where
   private module M = RawMonad Mon
 
   instance
-    open RawMPMonad public
-    monad : RawMPMonad (MST M)
-    return monad px μ = M.return (_ , ≤-refl , μ , px)
-    _≥=_ monad c f  μ = c μ M.>>= λ where
+    open RawMPMonad hiding (_>>=_; ts)
+    mst-monad : RawMPMonad (MST M)
+    return mst-monad px μ = M.return (_ , ≤-refl , μ , px)
+    _≥=_ mst-monad c f  μ = c μ M.>>= λ where
       (i₁ , ext₁ , μ₁ , pv) → (f ext₁ pv μ₁) M.>>= λ where
         (i₂ , ext₂ , μ₂ , pw) → M.return (i₂ , ≤-trans ext₁ ext₂ , μ₂ , pw)
 
     open StateMonad
     mst-monad-ops : StateMonad (MST M)
-    get (mst-monad-ops) μ = M.return (_ , ≤-refl , μ , μ)
-    put (mst-monad-ops) μ' μ = M.return (_ , ≤-refl , μ' , lift tt)
+    runState (mst-monad-ops) f μ = let μ' , p = f ≤-refl μ in M.return (_ , ≤-refl , μ' , p)

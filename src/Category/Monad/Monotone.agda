@@ -26,8 +26,13 @@ record RawMPMonad (M : Pt I ℓ) : Set (suc ℓ) where
   _^_ : ∀ {P Q : Pred I ℓ}⦃ m : Monotone Q ⦄ → M P ⊆ (λ i → Q i → M (P ∩ Q) i)
   c ^ qi = c ≥= λ {j} x≤j pj → return (pj , wk x≤j qi)
 
+  ts : ∀ {P : Pred I ℓ} Q ⦃ m : Monotone Q ⦄ → M P ⊆ (λ i → Q i → M (P ∩ Q) i)
+  ts _ c qi = c ^ qi
+
   open import Category.Monad.Predicate
   pmonad : RawPMonad {ℓ = ℓ} M
   pmonad = record
     { return? = return
     ; _=<?_ = λ f px → px >>= f }
+
+open RawMPMonad ⦃...⦄ public

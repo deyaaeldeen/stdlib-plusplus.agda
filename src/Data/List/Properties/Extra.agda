@@ -20,7 +20,7 @@ infixl 10 _[_]≔_
 _[_]≔_ : (l : List A) → Fin (length l) → A → List A
 [] [ () ]≔ x
 (x ∷ xs) [ zero ]≔ x' = x' ∷ xs
-(x ∷ xs) [ suc i ]≔ y = xs [ i ]≔ y
+(x ∷ xs) [ suc i ]≔ y = x ∷ xs [ i ]≔ y
 
 infixl 10 _[_]≔'_
 _[_]≔'_ : ∀ {x} → (l : List A) → x ∈ l → A → List A

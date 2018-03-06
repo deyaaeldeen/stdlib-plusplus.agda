@@ -21,8 +21,7 @@ ReaderT M P = λ i → E i → M P i
 Reader : Pt I ℓ
 Reader = ReaderT Identity
 
-record ReaderMonad M ⦃ Mon : RawMPMonad M ⦄ : Set (suc ℓ) where
-  open RawMPMonad Mon
+record ReaderMonad (M : Pt I ℓ) : Set (suc ℓ) where
   field
     ask    : ∀ {i} → M E i
     reader : ∀ {P} → (E ⇒ P) ⊆ M P
@@ -33,7 +32,7 @@ record ReaderMonad M ⦃ Mon : RawMPMonad M ⦄ : Set (suc ℓ) where
 
 open ReaderMonad ⦃...⦄ public
 
-module _ {M} ⦃ Mon : RawMPMonad M ⦄ where
+module _ {M}⦃ Mon : RawMPMonad M ⦄ where
   private module M = RawMPMonad Mon
 
   module _ ⦃ mono : Monotone E ⦄ where

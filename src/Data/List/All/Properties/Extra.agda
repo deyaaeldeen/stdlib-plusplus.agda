@@ -2,6 +2,7 @@ module Data.List.All.Properties.Extra {a}{A : Set a} where
 
 open import Relation.Binary.PropositionalEquality
 open import Data.Nat hiding (erase)
+open import Data.Fin
 open import Data.List
 open import Data.List.Any
 open import Data.List.Any.Membership.Propositional
@@ -61,6 +62,13 @@ _All[_]≔'_ : ∀ {p}{P : A → Set p} {xs : List A} {x} →
 _All[_]≔'_ [] ()
 _All[_]≔'_ {xs = .(_ ∷ _)} (px ∷ xs) (here refl) px' = px' ∷ xs
 _All[_]≔'_ {xs = .(_ ∷ _)} (px ∷ xs) (there t) px' = px ∷ (xs All[ t ]≔' px')
+
+-- strong update
+_All[_]≔!_ : ∀ {p}{P : A → Set p} {xs : List A} {x} →
+            All P xs → (i : Fin (length xs)) → P x → All P (xs [ i ]≔ x)
+[] All[ () ]≔! y
+(px ∷ xs) All[ zero ]≔! y = y ∷ xs
+(px ∷ xs) All[ suc i ]≔! y = px ∷ xs All[ i ]≔! y
 
 _all-∷ʳ_ : ∀ {p}{l : List A} {x} {P : A → Set p} → All P l → P x → All P (l ∷ʳ x)
 _all-∷ʳ_ [] q = q ∷ []
