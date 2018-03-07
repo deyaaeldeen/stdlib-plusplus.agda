@@ -31,20 +31,31 @@ record ErrorMonad (M : Pt I i) : Set (suc i) where
 module _ {M}⦃ Mon : RawMPMonad M ⦄ where
   private module M = RawMPMonad Mon
 
-  instance
-    open RawMPMonad
-    error-monad : RawMPMonad (ErrorT M)
-    return error-monad px = M.return (right px)
-    _≥=_ error-monad {P}{Q} px f = px M.≥= λ where
-        _ (left e)  → M.return (left e)
-        w (right x) → f w x
+  open RawMPMonad
+  errorT-monad : RawMPMonad (ErrorT M)
+  return errorT-monad px = M.return (right px)
+  _≥=_ errorT-monad {P}{Q} px f = px M.≥= λ where
+      _ (left e)  → M.return (left e)
+      w (right x) → f w x
 
-    open ErrorMonad
-    error-monad-ops : ErrorMonad (ErrorT M)
-    throw error-monad-ops e = M.return (left e)
-    catch error-monad-ops c f = c M.≥= λ where
-      w (left e)  → f w e
-      w (right x) → M.return (right x)
+  open ErrorMonad
+  errorT-monad-ops : ErrorMonad (ErrorT M)
+  throw errorT-monad-ops e = M.return (left e)
+  catch errorT-monad-ops c f = c M.≥= λ where
+    w (left e)  → f w e
+    w (right x) → M.return (right x)
 
   lift-error : ∀ {P} → M P ⊆ ErrorT M P
   lift-error x = x M.>>= (λ z → M.return (right z))
+
+-- Defining instances for the transformer
+-- leads to divergence of instance search,
+-- because M is on the outside.
+instance
+  open RawMPMonad
+  error-monad : RawMPMonad Error
+  error-monad = errorT-monad {Identity}
+
+  open ErrorMonad
+  error-monad-ops : ErrorMonad Error
+  error-monad-ops = errorT-monad-ops {Identity}

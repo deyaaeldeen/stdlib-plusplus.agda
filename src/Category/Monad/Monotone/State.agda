@@ -28,6 +28,8 @@ record StateMonad (M : Pt I ℓ) : Set (suc ℓ) where
   get : ∀ {i} → M H i
   get = runState λ _ μ → μ , μ
 
+open StateMonad ⦃...⦄ public
+
 module _ {M}⦃ Mon : RawMonad {ℓ} M ⦄ where
   private module M = RawMonad Mon
 
