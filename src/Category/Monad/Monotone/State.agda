@@ -11,6 +11,7 @@ open import Relation.Unary
 open import Relation.Unary.PredicateTransformer using (Pt)
 open import Relation.Unary.Monotone pre
 open import Data.Product
+open import Data.List.All
 open import Category.Monad
 open import Category.Monad.Monotone pre
 open import Category.Monad.Identity

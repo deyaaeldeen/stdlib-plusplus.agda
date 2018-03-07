@@ -1,6 +1,6 @@
 open import Relation.Binary hiding (_⇒_)
 
-module Category.Monad.Monotone.Error {i}(Exc : Set i)(pre : Preorder i i i) where
+module Category.Monad.Monotone.Error {i}(pre : Preorder i i i)(Exc : Set i) where
 
 open Preorder pre renaming (Carrier to I; _∼_ to _≤_; refl to ≤-refl)
 
@@ -27,6 +27,8 @@ record ErrorMonad (M : Pt I i) : Set (suc i) where
   field
     throw : ∀ {P i} → Exc → M P i
     catch : ∀ {P}   → M P ⊆ ((const Exc ↗ M P) ⇒ M P)
+
+open ErrorMonad ⦃...⦄ public
 
 module _ {M}⦃ Mon : RawMPMonad M ⦄ where
   private module M = RawMPMonad Mon
