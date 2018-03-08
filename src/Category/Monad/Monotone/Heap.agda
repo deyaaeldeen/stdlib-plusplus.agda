@@ -22,7 +22,6 @@ open import Relation.Unary hiding (_∈_)
 open import Relation.Unary.PredicateTransformer using (Pt)
 open import Relation.Unary.Monotone pre
 open import Data.Product
-open import Data.List.All
 open import Category.Monad
 open import Category.Monad.Monotone pre
 open import Category.Monad.Identity
@@ -40,14 +39,9 @@ record HeapMonad (M : Pt I ℓ) : Set (suc ℓ) where
     modify : ∀ {a} → _∈_ a ⊆ V a ⇒ M (λ W' → Lift ⊤)
     deref  : ∀ {a} → _∈_ a ⊆ M (V a)
 
-  storeₙ  : ∀ {as W}
-    ⦃ m : RawMPMonad M ⦄
-    ⦃ allw : ∀ {as} → Monotone (λ W → All (λ a → V a W) as) ⦄ →
-    All (λ a → V a W) as → M (λ W' → All (λ a → a ∈ W') as) W
-  storeₙ [] = return []
-  storeₙ (v ∷ vs) = do
-    (r , vs) ← store v ^ vs
-    (rs , r) ← storeₙ vs ^ r
-    return (r ∷ rs)
+  module _ ⦃ m : RawMPMonad M ⦄ where
+    open RawMPMonad m
+    open import Data.List.All as All
 
-open HeapMonad ⦃...⦄ public
+    storeₙ  : ∀ {W as} → All (λ a → V a W) as → M (λ W' → All (λ a → a ∈ W') as) W
+    storeₙ vs = sequenceM (All.map (λ v {x} ext → store (wk ext v)) vs)

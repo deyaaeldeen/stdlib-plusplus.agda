@@ -26,9 +26,7 @@ Error = ErrorT Identity
 record ErrorMonad (M : Pt I i) : Set (suc i) where
   field
     throw : ∀ {P i} → Exc → M P i
-    catch : ∀ {P}   → M P ⊆ ((const Exc ↗ M P) ⇒ M P)
-
-open ErrorMonad ⦃...⦄ public
+    try_catch_ : ∀ {P}   → M P ⊆ ((const Exc ↗ M P) ⇒ M P)
 
 module _ {M}⦃ Mon : RawMPMonad M ⦄ where
   private module M = RawMPMonad Mon
@@ -43,21 +41,22 @@ module _ {M}⦃ Mon : RawMPMonad M ⦄ where
   open ErrorMonad
   errorT-monad-ops : ErrorMonad (ErrorT M)
   throw errorT-monad-ops e = M.return (left e)
-  catch errorT-monad-ops c f = c M.≥= λ where
+  try_catch_ errorT-monad-ops c f = c M.≥= λ where
     w (left e)  → f w e
     w (right x) → M.return (right x)
 
   lift-error : ∀ {P} → M P ⊆ ErrorT M P
   lift-error x = x M.>>= (λ z → M.return (right z))
 
--- Defining instances for the transformer
--- leads to divergence of instance search,
--- because M is on the outside.
-instance
-  open RawMPMonad
-  error-monad : RawMPMonad Error
-  error-monad = errorT-monad {Identity}
+module Instances where
+  -- Defining instances for the transformer
+  -- leads to divergence of instance search,
+  -- because M is on the outside.
+  instance
+    open RawMPMonad
+    error-monad : RawMPMonad Error
+    error-monad = errorT-monad {Identity}
 
-  open ErrorMonad
-  error-monad-ops : ErrorMonad Error
-  error-monad-ops = errorT-monad-ops {Identity}
+    open ErrorMonad
+    error-monad-ops : ErrorMonad Error
+    error-monad-ops = errorT-monad-ops {Identity}
