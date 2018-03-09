@@ -30,7 +30,7 @@ record ReaderMonad E (M : Pred I ℓ → Pt I ℓ) : Set (suc ℓ) where
   asks : ∀ {A} → (E ⇒ A) ⊆ M E A
   asks = reader
 
-module Instances {M : Pt I ℓ}⦃ Mon : RawMPMonad M ⦄ where
+module _ {M : Pt I ℓ}⦃ Mon : RawMPMonad M ⦄ where
   private module M = RawMPMonad Mon
 
   module _ {E}⦃ mono : Monotone E ⦄ where
@@ -41,10 +41,10 @@ module Instances {M : Pt I ℓ}⦃ Mon : RawMPMonad M ⦄ where
       _≥=_  reader-monad m f e = m e M.≥= λ i≤j px → f i≤j px (wk i≤j e)
 
       open ReaderMonad
-      reader-monad-ops : ∀ {E} → ReaderMonad E (λ E → ReaderT E M)
+      reader-monad-ops : ReaderMonad E (λ E → ReaderT E M)
       ask reader-monad-ops e = M.return e
       reader reader-monad-ops f e = M.return (f e)
       local reader-monad-ops _ f c e = c (f e)
 
-  lift-reader : ∀ {P E} → M P ⊆ ReaderT E M P
-  lift-reader z _ = z
+  lift-reader : ∀ {P} E → M P ⊆ ReaderT E M P
+  lift-reader _ z _ = z

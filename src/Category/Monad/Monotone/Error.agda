@@ -28,7 +28,7 @@ record ErrorMonad (M : Pt I i) : Set (suc i) where
     throw : ∀ {P i} → Exc → M P i
     try_catch_ : ∀ {P}   → M P ⊆ ((const Exc ↗ M P) ⇒ M P)
 
-module _ {M}⦃ Mon : RawMPMonad M ⦄ where
+module _ {M} ⦃ Mon : RawMPMonad M ⦄ where
   private module M = RawMPMonad Mon
 
   open RawMPMonad
@@ -55,8 +55,8 @@ module Instances where
   instance
     open RawMPMonad
     error-monad : RawMPMonad Error
-    error-monad = errorT-monad {Identity}
+    error-monad = errorT-monad
 
     open ErrorMonad
     error-monad-ops : ErrorMonad Error
-    error-monad-ops = errorT-monad-ops {Identity}
+    error-monad-ops = errorT-monad-ops
