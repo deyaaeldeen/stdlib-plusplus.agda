@@ -41,3 +41,7 @@ instance
 
   ≤-mono : ∀ {i} → Monotone (_≤_ i)
   wk ≤-mono = flip trans
+
+  open import Data.Maybe as Maybe
+  maybe-monotone : ∀ {i}{P : Pred I i} ⦃ mono : Monotone P ⦄ → Monotone (λ W → Maybe (P W))
+  wk (maybe-monotone ⦃ mono ⦄) ext mv = Maybe.map (wk mono ext) mv

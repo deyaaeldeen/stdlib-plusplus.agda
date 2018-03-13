@@ -25,7 +25,7 @@ record ReaderMonad E (M : Pred I ℓ → Pt I ℓ) : Set (suc ℓ) where
   field
     ask    : ∀ {i} → M E E i
     reader : ∀ {P} → (E ⇒ P) ⊆ M E P
-    local  : ∀ {P}(E' : Pred I ℓ) → (E ⇒ E') ⊆ (M E' P ⇒ M E P)
+    local  : ∀ {P E'} → (E ⇒ E') ⊆ (M E' P ⇒ M E P)
 
   asks : ∀ {A} → (E ⇒ A) ⊆ M E A
   asks = reader
@@ -44,7 +44,7 @@ module _ {M : Pt I ℓ}⦃ Mon : RawMPMonad M ⦄ where
       reader-monad-ops : ReaderMonad E (λ E → ReaderT E M)
       ask reader-monad-ops e = M.return e
       reader reader-monad-ops f e = M.return (f e)
-      local reader-monad-ops _ f c e = c (f e)
+      local reader-monad-ops f c e = c (f e)
 
   lift-reader : ∀ {P} E → M P ⊆ ReaderT E M P
   lift-reader _ z _ = z

@@ -3,8 +3,8 @@ module Data.List.All.Properties.Extra {a}{A : Set a} where
 open import Relation.Binary.PropositionalEquality
 open import Data.Nat hiding (erase)
 open import Data.Fin
-open import Data.List
-open import Data.List.Any
+open import Data.List as List hiding (reverse)
+open import Data.List.Any hiding (tail)
 open import Data.List.Any.Membership.Propositional
 open import Data.List.Properties.Extra
 open import Data.List.At
@@ -91,7 +91,15 @@ lookup∘map [] ()
 lookup∘map (px ∷ pxs) (here refl) f = refl
 lookup∘map (px ∷ pxs) (there e) f = lookup∘map pxs e f
 
-
 erase : ∀ {p b}{P : A → Set p}{l : List A}{B : Set b} → (∀ {x} → P x → B) → All P l → List B
 erase f [] = []
 erase f (px ∷ xs₁) = f px ∷ erase f xs₁
+
+pop₁ : ∀ {x : A}{p xs}{P : A → Set p} → All P (x ∷ xs) → P x × All P xs
+pop₁ st = head st , tail st
+
+open import Data.List.Properties
+popₙ : ∀ (as : List A){p xs}{P : A → Set p} → All P (as ++ xs) → All P (List.reverse as) × All P xs
+popₙ [] st = [] , st
+popₙ (x ∷ xs) (px ∷ pxs) rewrite unfold-reverse x xs =
+  let pys , pzs = popₙ xs pxs in (pys all-∷ʳ px) , pzs
