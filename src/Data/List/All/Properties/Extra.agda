@@ -103,3 +103,11 @@ popₙ : ∀ (as : List A){p xs}{P : A → Set p} → All P (as ++ xs) → All P
 popₙ [] st = [] , st
 popₙ (x ∷ xs) (px ∷ pxs) rewrite unfold-reverse x xs =
   let pys , pzs = popₙ xs pxs in (pys all-∷ʳ px) , pzs
+
+open import Relation.Binary.Core
+open import Data.List.Relation.Pointwise hiding (Rel)
+module _ {a ℓ}{A : Set a}(_∼_ : Rel A ℓ) where
+
+  pw-map : ∀ {l m p}{P : A → Set p} → (∀ {a b} → a ∼ b → P a → P b) → Pointwise _∼_ l m → All P l → All P m
+  pw-map f [] [] = []
+  pw-map f (x∼y ∷ r) (px ∷ xs) = f x∼y px ∷ pw-map f r xs
