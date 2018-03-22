@@ -29,10 +29,10 @@ record RawMPMonad (M : Pt I ℓ) : Set (suc ℓ) where
 
   -- which is only useful because we also get monadic strength for free:
   infixl 10 _^_
-  _^_ : ∀ {P Q : Pred I ℓ}⦃ m : Monotone Q ⦄ → M P ⊆ (λ i → Q i → M (P ∩ Q) i)
+  _^_ : ∀ {P Q : Pred I ℓ}⦃ m : Monotone Q ⦄ → M P ⊆ (Q ⇒ M (P ∩ Q))
   c ^ qi = c ≥= λ {j} x≤j pj → return (pj , wk x≤j qi)
 
-  ts : ∀ {P : Pred I ℓ} Q ⦃ m : Monotone Q ⦄ → M P ⊆ (λ i → Q i → M (P ∩ Q) i)
+  ts : ∀ {P : Pred I ℓ} Q ⦃ m : Monotone Q ⦄ → M P ⊆ (Q ⇒ M (P ∩ Q))
   ts _ c qi = c ^ qi
 
   mapM : ∀ {P Q} → M P ⊆ ((P ↗ Q) ⇒ M Q)
