@@ -39,6 +39,13 @@ instance
                  Monotone (λ ys → All (λ x → C x ys) xs)
   wk (all-monotone ⦃ wₐ ⦄) ext v = All.map (λ {a} y → wk (wₐ a) ext y) v
 
+  open import Data.Vec using (Vec)
+  open import Data.Vec.All as VAll
+  vec-all-monotone : ∀ {b i n}{B : Set b}{xs : Vec B n}{C : B → Pred I i}
+                 ⦃ wₐ : ∀ x → Monotone (C x) ⦄ →
+                 Monotone (λ ys → VAll.All (λ x → C x ys) xs)
+  wk (vec-all-monotone ⦃ wₐ ⦄) ext v = VAll.map (λ {a} y → wk (wₐ a) ext y) v
+
   ≤-mono : ∀ {i} → Monotone (_≤_ i)
   wk ≤-mono = flip trans
 
