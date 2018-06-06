@@ -5,16 +5,15 @@ open import Data.Nat.Base
 open import Data.Nat.Properties
 open import Relation.Binary.PropositionalEquality
 
-m+1+n≡1+m+n : ∀ m n → m + suc n ≡ suc (m + n)
-m+1+n≡1+m+n zero    n = refl
-m+1+n≡1+m+n (suc m) n = cong suc (m+1+n≡1+m+n m n)
+≤′-unique : ∀ {i u} (p q : i ≤′ u) → p ≡ q
+≤′-unique ≤′-refl ≤′-refl = refl
+≤′-unique ≤′-refl (≤′-step q) = ⊥-elim (1+n≰n (≤′⇒≤ q))
+≤′-unique (≤′-step p) ≤′-refl = ⊥-elim (1+n≰n (≤′⇒≤ p))
+≤′-unique (≤′-step p) (≤′-step q) = cong ≤′-step (≤′-unique p q)
 
-<-+ : ∀ {m n m' n'} → m ≤ m' → n ≤ n' → m + n ≤ m' + n'
-<-+ {zero} {zero} z≤n z≤n = z≤n
-<-+ {suc m} (s≤s m<m') x = s≤s (<-+ m<m' x)
-<-+ {zero} {suc n} {zero} z≤n (s≤s n<n') = s≤s n<n'
-<-+ {zero} {suc n} {suc m'} z≤n (s≤s n<n') = s≤s (<-+ {m' = m'} z≤n (≤-step n<n'))
-
-<-unique : ∀ {i u} (p q : i < u) → p ≡ q
-<-unique (s≤s z≤n) (s≤s z≤n) = refl
-<-unique (s≤s (s≤s p)) (s≤s (s≤s q)) = sym (cong s≤s (<-unique (s≤s q) (s≤s p)))
+m+n+o≡n+m+o : ∀ m n o → m + (n + o) ≡ n + (m + o)
+m+n+o≡n+m+o m n o = begin
+  m + (n + o) ≡⟨ sym (+-assoc m n o) ⟩
+  (m + n) + o ≡⟨ cong (λ x → x + o) (+-comm m n) ⟩
+  (n + m) + o ≡⟨ +-assoc n m o ⟩
+  n + (m + o) ∎
