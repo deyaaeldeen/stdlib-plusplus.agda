@@ -18,6 +18,9 @@ open Monotone ⦃...⦄ public
 ∀≥[_] : ∀ {ℓ} → Pred I ℓ → Pred I (i ⊔ ℓ)
 ∀≥[ P ] i = ∀ {j} → i ≤ j → P j
 
+∃≥[_] : ∀ {ℓ} → Pred I ℓ → Pred I (i ⊔ ℓ)
+∃≥[ P ] i = ∃ λ j → i ≤ j × P j
+
 infixr 4 _↗_
 _↗_ : ∀ {ℓ} → Pred I ℓ → Pred I ℓ → Pred I (i ⊔ ℓ)
 (P ↗ Q) = ∀≥[ P ⇒ Q ]

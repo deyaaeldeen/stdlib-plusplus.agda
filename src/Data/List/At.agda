@@ -4,7 +4,7 @@ open import Data.Nat
 open import Data.List
 open import Data.List.All hiding (map; lookup)
 open import Data.List.Any hiding (map)
-open import Data.List.Any.Membership.Propositional
+open import Data.List.Membership.Propositional
 open import Data.Fin hiding (_<_)
 open import Data.Maybe hiding (map; All)
 open import Data.Product hiding (map)

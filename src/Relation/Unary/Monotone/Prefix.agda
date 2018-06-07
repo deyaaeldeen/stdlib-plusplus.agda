@@ -2,7 +2,7 @@ module Relation.Unary.Monotone.Prefix {ℓ}{T : Set ℓ} where
 
 open import Data.List.Prefix
 open import Data.List as List
-open import Data.List.Any.Membership.Propositional
+open import Data.List.Membership.Propositional
 open import Data.List.All as All
 
 open import Relation.Unary.Monotone (⊑-preorder {A = T})

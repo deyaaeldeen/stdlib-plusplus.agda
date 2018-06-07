@@ -4,7 +4,7 @@ open import Level
 open import Data.Nat
 open import Data.List.At
 open import Data.List.Any hiding (map)
-open import Data.List.Any.Membership.Propositional
+open import Data.List.Membership.Propositional
 open import Relation.Binary.Core using (REL; Reflexive; Transitive)
 open import Relation.Binary.List.Pointwise hiding (refl; map)
 open import Data.List
