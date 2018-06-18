@@ -1,4 +1,5 @@
 name: standard-library++
-include: src
-depend:
-  standard-library
+include:
+  .
+  ./src/
+  ./lib/stdlib.agda/src/

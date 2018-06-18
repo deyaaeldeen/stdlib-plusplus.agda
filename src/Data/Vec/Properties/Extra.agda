@@ -2,12 +2,11 @@ module Data.Vec.Properties.Extra where
 
 open import Data.Product hiding (map; zip)
 open import Data.Nat
-open import Data.Fin
+open import Data.Fin hiding (_+_)
 open import Data.Vec
 open import Data.Product hiding (map)
 open import Relation.Binary.PropositionalEquality hiding ([_])
 open import Data.List as L using ()
-open import Data.List.Properties
 open import Relation.Binary.HeterogeneousEquality as H using ()
 open ≡-Reasoning public
 open import Function
@@ -55,6 +54,7 @@ fromList-map : ∀ {l} {A B : Set l} (f : A → B) (xs : L.List A) →
                (fromList ((L.map f xs))) H.≅ (map f (fromList xs))
 fromList-map f L.[] = H.refl
 fromList-map f (x L.∷ xs) = ∷-cong (length-map _ xs) (fromList-map f xs)
+  where open import Data.List.Properties
 
 length-toList : ∀ {A : Set } {n} (v : Vec A n) → L.length (toList v) ≡ n
 length-toList [] = refl
@@ -67,6 +67,7 @@ length-map-toList {n = n} {f} v = begin
   L.length (toList v)
     ≡⟨ length-toList v ⟩
   n ∎
+  where open import Data.List.Properties
 
 lookup-≔ : ∀ {n k} {A : Set k} (v : Vec A n) i (a : A) → lookup i (v [ i ]≔ a) ≡ a
 lookup-≔ (x ∷ v) zero a = refl
@@ -112,27 +113,34 @@ xs⊒ys[i] (there p) (x ∷ q) = there (xs⊒ys[i] p q)
 ∷ʳ[length] (x ∷ Σ₁) y | i , p = (suc i) , there p
 
 -- Moar All properties
+module _ {a p}{A : Set a}{P : A → Set p} where
 
-open import Data.Vec.All
+  open import Data.Vec.All
+  all-lookup' : ∀ {k} {xs : Vec A k} {i x} → xs [ i ]= x → All P xs → P x
+  all-lookup' here (px ∷ _) = px
+  all-lookup' (there p) (_ ∷ xs) = all-lookup' p xs
 
-all-lookup' : ∀ {a p} {A : Set a} {P : A → Set p} {k} {xs : Vec A k} {i x} →
-              xs [ i ]= x → All P xs → P x
-all-lookup' here (px ∷ _) = px
-all-lookup' (there p) (_ ∷ xs) = all-lookup' p xs
+  -- proof matters; update a particular witness of a property
+  _All[_]≔_ : ∀ {k} {xs : Vec A k} {i x} → All P xs → xs [ i ]= x → P x → All P xs
+  [] All[ () ]≔ px
+  (px ∷ xs) All[ here ]≔ px' = px' ∷ xs
+  (px ∷ xs) All[ there i ]≔ px' = px ∷ (xs All[ i ]≔ px')
 
--- proof matters; update a particular witness of a property
-_All[_]≔_ : ∀ {a p} {A : Set a} {P : A → Set p} {k} {xs : Vec A k} {i x} →
-            All P xs → xs [ i ]= x → P x → All P xs
-[] All[ () ]≔ px
-(px ∷ xs) All[ here ]≔ px' = px' ∷ xs
-(px ∷ xs) All[ there i ]≔ px' = px ∷ (xs All[ i ]≔ px')
+  _all-∷ʳ_ : ∀ {n}{l : Vec A n}{x} → All P l → P x → All P (l ∷ʳ x)
+  _all-∷ʳ_ [] q = q ∷ []
+  _all-∷ʳ_ (px ∷ p) q = px ∷ (p all-∷ʳ q)
 
-_all-∷ʳ_ : ∀ {a n p} {A : Set a} {l : Vec A n} {x} {P : A → Set p} → All P l → P x → All P (l ∷ʳ x)
-_all-∷ʳ_ [] q = q ∷ []
-_all-∷ʳ_ (px ∷ p) q = px ∷ (p all-∷ʳ q)
+-- more take/drop properties
+module _ {a}{A : Set a} where
 
-take′ : ∀ {a n}{A : Set a} → (i : Fin (suc n)) → Vec A n → Vec A (toℕ i)
-take′ zero [] = []
-take′ (suc ()) []
-take′ zero (x ∷ v) = []
-take′ (suc i) (x ∷ v) = x ∷ (take′ i v)
+  -- an alternative version of take usin Fin
+  take′ : ∀ {a n}{A : Set a} → (i : Fin (suc n)) → Vec A n → Vec A (toℕ i)
+  take′ zero [] = []
+  take′ (suc ()) []
+  take′ zero (x ∷ v) = []
+  take′ (suc i) (x ∷ v) = x ∷ (take′ i v)
+
+  take++drop : ∀ m {n}(v : Vec A (m + n)) → take m v ++ drop m v ≡ v
+  take++drop k v with splitAt k v
+  take++drop k .(fst ++ snd) | fst , snd , refl = refl
+

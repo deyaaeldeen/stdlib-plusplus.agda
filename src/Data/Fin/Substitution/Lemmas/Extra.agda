@@ -1,12 +1,16 @@
-module Extensions.Substitution where
+module Data.Fin.Substitution.Lemmas.Extra where
 
-open import Prelude hiding (id)
-
+import Function as Fun
+open import Data.Nat
+open import Data.Fin hiding (_+_)
 open import Data.Fin.Substitution
 open import Data.Fin.Substitution.Lemmas
 open import Data.Vec.Properties
 open import Data.Vec
+open import Data.Star using (_◅_ ; ε)
 open import Function hiding (id)
+open import Relation.Binary.PropositionalEquality
+open ≡-Reasoning
 
 module AdditionalLemmas {T} (lemmas : TermLemmas T) where
 
@@ -55,7 +59,7 @@ module AdditionalLemmas {T} (lemmas : TermLemmas T) where
 
   private
     var⋆weaken : ∀ {n} → _≗_ {A = Fin n} (var ∘ suc) (weaken ∘ var)
-    var⋆weaken n = begin 
+    var⋆weaken n = begin
       var (suc n) ≡⟨ sym $ lookup-wk n ⟩
       lookup n wk ≡⟨ sym $ var-/ ⟩
       (var n) / wk ≡⟨ /-wk ⟩
@@ -80,9 +84,9 @@ module AdditionalLemmas {T} (lemmas : TermLemmas T) where
   map-var-varwk≡wk : ∀ {n} → map var (Var.wk {n}) ≡ wk {n}
   map-var-varwk≡wk {zero} = refl
   map-var-varwk≡wk {suc n} = begin
-    map var (map suc Var.id) ≡⟨ map-var⋆weaken ⟩ 
+    map var (map suc Var.id) ≡⟨ map-var⋆weaken ⟩
     map weaken (map var Var.id) ≡⟨ cong (map weaken) map-var-varid≡id ⟩
-    wk ∎ 
+    wk ∎
 
   map-var-↑ : ∀ {n m} {s : Vec (Fin n) m} {s'} → map var s ≡ s' → map var (s Var.↑) ≡ s' ↑
   map-var-↑ {s = s} {s' = s'} eq = begin
@@ -102,7 +106,7 @@ module AdditionalLemmas {T} (lemmas : TermLemmas T) where
       ≡⟨ cong' (sym $ map-∘ /-var-zero weaken wk) ⟩
     a / (var zero ∷ map (λ t → (weaken t) / (sub $ var zero)) wk)
       ≡⟨ cong' (map-cong (λ t → weaken-sub-vanishes) wk) ⟩
-    a / (var zero ∷ map Prelude.id wk)
+    a / (var zero ∷ map Fun.id wk)
       ≡⟨ cong' (map-id wk) ⟩
     a / ((var zero ∷ wk))
       ≡⟨ id-vanishes a ⟩
@@ -110,4 +114,52 @@ module AdditionalLemmas {T} (lemmas : TermLemmas T) where
     where
       /-var-zero = (λ t → t / (sub $ var zero))
       cong' : ∀ {x y} → x ≡ y → a / (var zero ∷ x) ≡ a / (var zero ∷ y)
-      cong' = λ rest → cong (λ u → a / (var zero ∷ u)) rest 
+      cong' = λ rest → cong (λ u → a / (var zero ∷ u)) rest
+
+  lookup-lift-∷ : ∀ {v w} k x {b}{ρ : Sub T v w} → lookup (lift k suc x) ((b ∷ ρ) ↑⋆ k) ≡ lookup x (ρ ↑⋆ k)
+  lookup-lift-∷ zero zero = refl
+  lookup-lift-∷ zero (suc x) = refl
+  lookup-lift-∷ (suc k) zero = refl
+  lookup-lift-∷ (suc k) (suc x) {b} {ρ} = begin
+    lookup (lift k suc x) (map (λ t → t /Var Var.wk) ((b ∷ ρ) ↑⋆ k))
+      ≡⟨ lookup-map (lift k suc x) (λ t → t /Var Var.wk) ((b ∷ ρ) ↑⋆ k) ⟩
+    lookup (lift k suc x) ((b ∷ ρ) ↑⋆ k) /Var Var.wk
+      ≡⟨ cong (λ t → t /Var Var.wk) (lookup-lift-∷ k x) ⟩
+    lookup x (ρ ↑⋆ k) /Var Var.wk
+      ≡⟨ sym (lookup-map x (λ t → t /Var Var.wk) (ρ ↑⋆ k)) ⟩
+    lookup x (map (λ t → t /Var Var.wk) (ρ ↑⋆ k))
+    ∎
+
+  wk-∷ : ∀ {ν ν'} (a : T ν)(ρ : Sub T ν ν'){b} → a / wk / (b ∷ ρ) ≡ a / ρ
+  wk-∷ a ρ {b} = begin
+    a / wk / (b ∷ ρ)
+    ≡⟨ /✶-↑✶ ((b ∷ ρ) ◅ wk ◅ ε) (ρ ◅ ε) (λ k x → begin
+      (var x) /✶ ((b ∷ ρ) ◅ wk ◅ ε) ↑✶ k
+        ≡⟨ refl ⟩
+      (var x) / wk ↑⋆ k / (b ∷ ρ) ↑⋆ k
+        ≡⟨ cong (flip _/_ ((b ∷ ρ) ↑⋆ k)) var-/ ⟩
+      (lookup x (wk ↑⋆ k)) / (b ∷ ρ) ↑⋆ k
+        ≡⟨ cong (flip _/_ ((b ∷ ρ) ↑⋆ k)) (lookup-wk-↑⋆ k x) ⟩
+      (var (lift k suc x)) / (b ∷ ρ) ↑⋆ k
+        ≡⟨ var-/ ⟩
+      lookup (lift k suc x) ((b ∷ ρ) ↑⋆ k)
+        ≡⟨ lookup-lift-∷ k x ⟩
+      lookup x (ρ ↑⋆ k)
+        ≡⟨ sym var-/ ⟩
+      (var x) /✶ (ρ ◅ ε) ↑✶ k ∎) 0 a ⟩
+    a / ρ
+    ∎
+
+  wk⋆-++ : ∀ {ν ν'} μ (a : T ν)(ρ : Sub T ν ν'){ρ'} → a / wk⋆ μ / (ρ' ++ ρ) ≡ a / ρ
+  wk⋆-++ zero a ρ {[]} = cong (λ t → t / ρ) (id-vanishes a)
+  wk⋆-++ (suc μ) a ρ {_ ∷ ρ'} = begin
+    a / wk⋆ (suc μ) / (_ ∷ ρ' ++ ρ)
+      ≡⟨ cong (λ φ → a / φ / (_ ∷ ρ' ++ ρ)) map-weaken ⟩
+    a / (wk⋆ μ ⊙ wk) / (_ ∷ ρ' ++ ρ)
+      ≡⟨ cong (λ t → _/_ t (_ ∷ ρ' ++ ρ)) (/-⊙ a) ⟩
+    a / wk⋆ μ / wk / (_ ∷ ρ' ++ ρ)
+      ≡⟨ wk-∷ (a / wk⋆ μ) (ρ' ++ ρ) ⟩
+    a / wk⋆ μ / (ρ' ++ ρ)
+      ≡⟨ wk⋆-++ μ a ρ ⟩
+    a / ρ
+    ∎
