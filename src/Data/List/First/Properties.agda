@@ -7,7 +7,7 @@ open import Relation.Binary.PropositionalEquality
 open import Function
 open import Data.Empty
 open import Data.List.First
-open import Data.List.Any.Membership.Propositional
+open import Data.List.Membership.Propositional
 
 first⟶∈ : ∀ {B : A → Set} {x l} → First B x l → (x ∈ l × B x)
 first⟶∈ (here {x = x} p) = here refl , p

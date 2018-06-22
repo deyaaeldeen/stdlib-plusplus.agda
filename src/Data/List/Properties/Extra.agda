@@ -7,7 +7,7 @@ open import Data.Product hiding (map)
 open import Data.Fin using (fromℕ≤; zero; suc)
 open import Data.List.All hiding (lookup; map)
 open import Data.List.Any hiding (map)
-open import Data.List.Any.Membership.Propositional
+open import Data.List.Membership.Propositional
 
 open import Relation.Binary.List.Pointwise hiding (refl; map)
 open import Relation.Binary.PropositionalEquality

@@ -5,7 +5,7 @@ open import Data.Nat hiding (erase)
 open import Data.Fin
 open import Data.List as List hiding (reverse)
 open import Data.List.Any hiding (tail)
-open import Data.List.Any.Membership.Propositional
+open import Data.List.Membership.Propositional
 open import Data.List.Properties.Extra
 open import Data.List.At
 open import Data.List.All as All
