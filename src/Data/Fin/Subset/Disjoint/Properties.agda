@@ -16,15 +16,14 @@ open import Data.Fin.Subset.Disjoint
 -- properties of disjoint subsets x ◆ y
 module _ where
 
-  ∪ᵣ-◆ : ∀ {n}{x y z : Subset n} → (x ∪ y) ◆ z → y ◆ z
-  ∪ᵣ-◆ p (i , i∈y∩z) =
-    let
-      (i∈y , i∈z) = x∈p∩q⁻ _ _ i∈y∩z
-      i∈x∪y = q⊆p∪q _ _ i∈y
-    in p (i , x∈p∩q⁺ (i∈x∪y , i∈z))
+  ◆-comm : ∀ {n} {x y : Subset n} → x ◆ y → y ◆ x
+  ◆-comm {x = x}{y} = subst Empty (∩-comm x y)
 
-  ∪ₗ-◆ : ∀ {n}{x y z : Subset n} → (x ∪ y) ◆ z → x ◆ z
-  ∪ₗ-◆ {x = x}{y} rewrite ∪-comm x y = ∪ᵣ-◆
+  ◆-⊆-left : ∀ {n}{x y z : Subset n} → x ⊆ y → y ◆ z → x ◆ z
+  ◆-⊆-left w d (e , e∈x∩z) = let (e∈x , e∈z) = (x∈p∩q⁻ _ _ e∈x∩z) in d (e , x∈p∩q⁺ ((w e∈x) , e∈z))
+
+  ◆-⊆-right : ∀ {n}{x y z : Subset n} → x ⊆ z → y ◆ z → y ◆ x
+  ◆-⊆-right w d = ◆-comm (◆-⊆-left w (◆-comm d))
 
   ◆-∪ : ∀ {n}{x y z : Subset n} → x ◆ y → x ◆ z → x ◆ (y ∪ z)
   ◆-∪ x◆y x◆z (i , i∈x∩y∪z) with x∈p∪q⁻ _ _ (proj₂ (x∈p∩q⁻ _ _ i∈x∩y∪z))
@@ -38,7 +37,7 @@ module _ where
   ++-⨄ : ∀ {n}{xs ys}{x y : Subset n} → xs ⨄ x → ys ⨄ y → (x ◆ y) → (xs ++ ys) ⨄ (x ∪ y)
   ++-⨄ {x = x}{y} [] q d rewrite ∪-identityˡ y = q
   ++-⨄ {y = y} (_∷_ {x = x}{z} x◆z xs⊎y) ys⊎z x∪z⊎y rewrite ∪-assoc x z y =
-    (◆-∪ x◆z (∪ₗ-◆ x∪z⊎y)) ∷ (++-⨄ xs⊎y ys⊎z (∪ᵣ-◆ x∪z⊎y))
+    (◆-∪ x◆z (◆-⊆-left (p⊆p∪q z) x∪z⊎y)) ∷ (++-⨄ xs⊎y ys⊎z (◆-⊆-left (q⊆p∪q x z) x∪z⊎y))
 
   ⨄-trans : ∀ {n}{xs ys}{x y : Subset n} → xs ⨄ x → (x ∷ ys) ⨄ y → (xs ++ ys) ⨄ (x ∪ y)
   ⨄-trans {x = x}{y} xs▰x (_∷_ {y = z} x◆y ys▰y) rewrite sym (∪-assoc x x z) =
