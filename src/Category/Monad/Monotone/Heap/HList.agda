@@ -11,7 +11,7 @@ open import Level
 open import Data.List.All as All
 open import Data.List.All.Properties.Extra
 open import Data.List.Any
-open import Data.List.Any.Membership.Propositional using (_∈_)
+open import Data.List.Membership.Propositional using (_∈_)
 open import Data.List.Properties.Extra
 open import Data.Product
 open import Data.Unit
