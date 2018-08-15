@@ -150,6 +150,30 @@ module AdditionalLemmas {T} (lemmas : TermLemmas T) where
     a / ρ
     ∎
 
+  wk-∷' : ∀ {ν ν'} (a : T ν)(ρ : Sub T ν ν'){b} → a / wk / (b ∷ ρ) ≡ a / ρ
+  wk-∷' a ρ {b} = begin
+    a / wk / (b ∷ ρ)
+    ≡⟨ /✶-↑✶ ((b ∷ ρ) ◅ wk ◅ ε) (ρ ◅ ε) (λ k x → begin
+      (var x) /✶ ((b ∷ ρ) ◅ wk ◅ ε) ↑✶ k
+        ≡⟨ refl ⟩
+      (var x) / wk ↑⋆ k / (b ∷ ρ) ↑⋆ k
+        ≡⟨ cong (flip _/_ ((b ∷ ρ) ↑⋆ k)) var-/ ⟩
+      (lookup x (wk ↑⋆ k)) / (b ∷ ρ) ↑⋆ k
+        ≡⟨ cong (flip _/_ ((b ∷ ρ) ↑⋆ k)) (lookup-wk-↑⋆ k x) ⟩
+      (var (lift k suc x)) / (b ∷ ρ) ↑⋆ k
+        ≡⟨ var-/ ⟩
+      lookup (lift k suc x) ((b ∷ ρ) ↑⋆ k)
+        ≡⟨ lookup-lift-∷ k x ⟩
+      lookup x (ρ ↑⋆ k)
+        ≡⟨ sym var-/ ⟩
+      (var x) /✶ (ρ ◅ ε) ↑✶ k ∎) 0 a ⟩
+    a / ρ
+    ∎
+
+  -- wk⋆-++ : ∀ w {n m k}(a : T (k + n))(ρ' : Sub T w m)(ρ : Sub T n m){ρ'' : Sub T k m} → a / wk⋆ w ↑⋆ k / (ρ'' ++ ρ' ++ ρ) ≡ a / (ρ'' ++ ρ)
+  -- wk⋆-++ zero {k = k} a [] ρ {ρ''} = {!!}
+  -- wk⋆-++ (suc w) a ρ' ρ = {!!}
+
   wk⋆-++ : ∀ {ν ν'} μ (a : T ν)(ρ : Sub T ν ν'){ρ'} → a / wk⋆ μ / (ρ' ++ ρ) ≡ a / ρ
   wk⋆-++ zero a ρ {[]} = cong (λ t → t / ρ) (id-vanishes a)
   wk⋆-++ (suc μ) a ρ {_ ∷ ρ'} = begin
@@ -162,4 +186,18 @@ module AdditionalLemmas {T} (lemmas : TermLemmas T) where
     a / wk⋆ μ / (ρ' ++ ρ)
       ≡⟨ wk⋆-++ μ a ρ ⟩
     a / ρ
+    ∎
+
+  wk-↑-sub-vanishes : ∀ {v w}(φ : Sub T v w){t} → wk ⊙ (φ ↑ ⊙ sub t) ≡ φ
+  wk-↑-sub-vanishes φ {t} = extensionality λ i →
+    begin
+      lookup i (wk ⊙ (φ ↑ ⊙ sub t))
+    ≡⟨ lookup-⊙ i ⟩
+      lookup i wk / (φ ↑ ⊙ sub t)
+    ≡⟨ cong (flip _/_ _) (lookup-wk i) ⟩
+      var (Fin.suc i) / (φ ↑ ⊙ sub t)
+    ≡⟨ var-/ {x = Fin.suc i}{ρ = φ ↑ ⊙ sub t} ⟩
+      lookup i (map weaken φ ⊙ sub t)
+    ≡⟨ cong (lookup i) map-weaken-⊙-sub ⟩
+      lookup i φ
     ∎
