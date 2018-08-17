@@ -40,6 +40,16 @@ module Unifiers {ℓ}{T : Pred ℕ ℓ}(tms : Terms T)(simple : Simple T) where
 
   {- lifting iterated substitutions -}
   module _ where
+    -- (ρ : Sub T m n) is also evidence that n ≤ m;
+    -- as such, we may weaken variables from the co-domain of ρ to the domain.
+    rev-wk : ∀ {m n} → Sub T m n → Fin n → Fin m
+    rev-wk anil = id
+    rev-wk (ρ asnoc _ / x) = punchIn x ∘ rev-wk ρ
+
+    -- _↥_ : ∀ {m n x} → Sub T m n → (Fin m → Fin x) → ∃ (Sub T x)
+    -- anil ↥ f = , anil
+    -- (ρ asnoc t / x) ↥ f = let (y , ρ') = ρ ↥ (f ∘ punchIn x) in {!!} , {!ρ' asnoc ? / ?!}
+
     _↑ : ∀ {n m} → Sub T m n → Sub T (suc m) (suc n)
     anil ↑ = anil
     (ρ asnoc t / x) ↑ = (ρ ↑) asnoc (weaken t) / (suc x)

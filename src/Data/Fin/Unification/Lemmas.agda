@@ -55,10 +55,10 @@ record Lemmas₁ {T}(tms : Terms T) : Set₁ where
   field
     lms : TermLemmas T
 
-  open TermLemmas lms using (simple; termSubst; var-/)
+  open TermLemmas lms using (simple; termSubst; var-/; /-⊙)
   open Simple simple
   module TmPar = TermSubst termSubst
-  open TmPar using () renaming (_⊙_ to _par-⊙_)
+  open TmPar using () renaming (_⊙_ to _par-⊙_; _/_ to _par-/_)
 
   {- iterated substitution + lemmas -}
   field
@@ -73,7 +73,7 @@ record Lemmas₁ {T}(tms : Terms T) : Set₁ where
 
   private
     _[↦_] : ∀ {n m} → T n → Sub T n m → T m
-    _[↦_] = λ t ρ → t TmPar./ (par ρ)
+    _[↦_] = λ t ρ → t par-/ (par ρ)
 
   {- useful parallel substitutions -}
   wk-at : ∀ {n} → Fin (ℕ.suc n) → Par.Sub T n (ℕ.suc n)
@@ -89,31 +89,45 @@ record Lemmas₁ {T}(tms : Terms T) : Set₁ where
   field
     /-par : ∀ {n m} (ρ : Sub T n m) t → (t / ρ) ≡ t [↦ ρ ]
 
-  var-/-par : ∀ {n m} x t (ρ : Sub T n m) → (var x) [↦ (ρ asnoc t / x) ] ≡ t [↦ ρ ]
-  var-/-par x t ρ = begin
-    var x TmPar./ (par (ρ asnoc t / x))
-    ≡⟨ var-/ ⟩ lookup x (par (ρ asnoc t / x))
-    ≡⟨ lookup-par x (ρ asnoc t / x) ⟩ asub (ρ asnoc t / x) x
+  var-/-par : ∀ {n m} x (ρ : Sub T n m) → (var x) [↦ ρ ] ≡ asub ρ x
+  var-/-par x ρ = begin
+    var x par-/ (par ρ)
+    ≡⟨ var-/ ⟩ lookup x (par ρ)
+    ≡⟨ lookup-par x ρ ⟩ asub ρ x ∎
+
+  var-asnoc-step : ∀ {n m} x t (ρ : Sub T n m) → (var x) [↦ (ρ asnoc t / x) ] ≡ t [↦ ρ ]
+  var-asnoc-step x t ρ = begin
+    var x par-/ (par (ρ asnoc t / x))
+    ≡⟨ var-/-par x (ρ asnoc t / x) ⟩ asub (ρ asnoc t / x) x
     ≡⟨ cong (bind (asub ρ)) (t-for-x x) ⟩ bind (asub ρ) t
-    ≡⟨ /-par ρ t ⟩ t TmPar./ par ρ ∎
+    ≡⟨ /-par ρ t ⟩ t par-/ par ρ ∎
+
+  tabulate-⊙ : ∀ {n m x}{f : Fin x → T n}(ρ : Par.Sub T n m) → tabulate f par-⊙ ρ ≡ tabulate ((_par-/ ρ) ∘ f)
+  tabulate-⊙ {f = f} ρ = sym (tabulate-∘ (_par-/ ρ) f)
+
+  var-wk-at : ∀ {n}{x : Fin (ℕ.suc n)} y → (var y) par-/ wk-at x ≡ var (punchIn x y)
+  var-wk-at y = trans var-/ (lookup∘tabulate (var ∘ punchIn _) y)
 
   {- asnoc-punchin also disappears in the par version -}
   wk-at-vanishes : ∀ {v w}(ρ : Sub T v w) x t → wk-at x par-⊙ par (ρ asnoc t / x) ≡ par ρ
   wk-at-vanishes ρ x t =
     begin
         wk-at x par-⊙ par (ρ asnoc t / x)
-      ≡⟨ refl ⟩
-        Vec.map (λ t' → t' TmPar./ par (ρ asnoc t / x)) (wk-at x)
-      ≡⟨ cong (Vec.map _) (tabulate-∘ _ (punchIn x)) ⟩
-        Vec.map (λ t' → t' TmPar./ par (ρ asnoc t / x)) (Vec.map var (tabulate (punchIn x)))
-      ≡⟨ sym $ map-∘ _ _ _ ⟩
-        Vec.map (λ i  → (var i) TmPar./ par (ρ asnoc t / x)) (tabulate (punchIn x))
-      ≡⟨ map-cong (λ i → var-/ {x = i}) _ ⟩
-        Vec.map (λ i  → lookup i (par (ρ asnoc t / x))) (tabulate (punchIn x))
-      ≡⟨ map-cong (λ i → lookup-par i (ρ asnoc t / x)) _ ⟩
-        Vec.map (asub (ρ asnoc t / x)) (tabulate (punchIn x))
-      ≡⟨ sym $ tabulate-∘ _ _ ⟩
+      ≡⟨ tabulate-⊙ (par (ρ asnoc t / x)) ⟩
+        tabulate ((_par-/ (par (ρ asnoc t / x))) ∘ var ∘ punchIn x)
+      ≡⟨ tabulate-cong (λ y → var-/-par (punchIn x y) (ρ asnoc t / x)) ⟩
         tabulate (asub (ρ asnoc t / x) ∘ (punchIn x))
       ≡⟨ tabulate-cong (λ y → asnoc-punchIn ρ x y t) ⟩
         par ρ ∎
-    where open import Data.Vec.Properties
+
+  {- one can push through `wk-at x` on rev-wk to an instance of `punchIn x` -}
+  rev-wk-⊙-wk-at : ∀ {n m}(φ : Sub T m n){x} →
+                   tabulate (var ∘ rev-wk φ) par-⊙ wk-at x ≡
+                   tabulate (var ∘ punchIn x ∘ rev-wk φ)
+  rev-wk-⊙-wk-at φ {x} =
+    begin
+      tabulate (var ∘ (rev-wk φ)) par-⊙ (wk-at x)
+    ≡⟨ tabulate-⊙ (wk-at x) ⟩
+      tabulate ((TmPar._/ (wk-at x)) ∘ var ∘ (rev-wk φ))
+    ≡⟨ tabulate-cong (var-wk-at ∘ (rev-wk φ)) ⟩
+      tabulate (var ∘ (Fin.punchIn x) ∘ (rev-wk φ)) ∎
