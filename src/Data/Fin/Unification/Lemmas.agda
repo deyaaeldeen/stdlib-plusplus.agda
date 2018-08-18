@@ -108,6 +108,17 @@ record Lemmas₁ {T}(tms : Terms T) : Set₁ where
   var-wk-at : ∀ {n}{x : Fin (ℕ.suc n)} y → (var y) par-/ wk-at x ≡ var (punchIn x y)
   var-wk-at y = trans var-/ (lookup∘tabulate (var ∘ punchIn _) y)
 
+  •-rev-wk : ∀ {n m l} x (ρ : Sub T n m)(φ : Sub T m l) → (asub (ρ ⊙ φ)) (punchIn⋆ ρ x) ≡ (asub φ x)
+  •-rev-wk x anil φ = refl
+  •-rev-wk x (ρ asnoc t / y) φ = begin
+      asub ((ρ ⊙ φ) asnoc t / y) (punchIn⋆ (ρ asnoc t / y) x)
+    ≡⟨⟩
+      asub ((ρ ⊙ φ) asnoc t / y) (punchIn y (punchIn⋆ ρ x))
+    ≡⟨ asnoc-punchIn (ρ ⊙ φ) y _ t ⟩
+      asub (ρ ⊙ φ) (punchIn⋆ ρ x)
+    ≡⟨ •-rev-wk x ρ φ ⟩
+      asub φ x ∎
+
   {- asnoc-punchin also disappears in the par version -}
   wk-at-vanishes : ∀ {v w}(ρ : Sub T v w) x t → wk-at x par-⊙ par (ρ asnoc t / x) ≡ par ρ
   wk-at-vanishes ρ x t =
@@ -120,14 +131,14 @@ record Lemmas₁ {T}(tms : Terms T) : Set₁ where
       ≡⟨ tabulate-cong (λ y → asnoc-punchIn ρ x y t) ⟩
         par ρ ∎
 
-  {- one can push through `wk-at x` on rev-wk to an instance of `punchIn x` -}
+  {- one can push through `wk-at x` on punchIn⋆ to an instance of `punchIn x` -}
   rev-wk-⊙-wk-at : ∀ {n m}(φ : Sub T m n){x} →
-                   tabulate (var ∘ rev-wk φ) par-⊙ wk-at x ≡
-                   tabulate (var ∘ punchIn x ∘ rev-wk φ)
+                   tabulate (var ∘ punchIn⋆ φ) par-⊙ wk-at x ≡
+                   tabulate (var ∘ punchIn x ∘ punchIn⋆ φ)
   rev-wk-⊙-wk-at φ {x} =
     begin
-      tabulate (var ∘ (rev-wk φ)) par-⊙ (wk-at x)
+      tabulate (var ∘ (punchIn⋆ φ)) par-⊙ (wk-at x)
     ≡⟨ tabulate-⊙ (wk-at x) ⟩
-      tabulate ((TmPar._/ (wk-at x)) ∘ var ∘ (rev-wk φ))
-    ≡⟨ tabulate-cong (var-wk-at ∘ (rev-wk φ)) ⟩
-      tabulate (var ∘ (Fin.punchIn x) ∘ (rev-wk φ)) ∎
+      tabulate ((_par-/ (wk-at x)) ∘ var ∘ (punchIn⋆ φ))
+    ≡⟨ tabulate-cong (var-wk-at ∘ (punchIn⋆ φ)) ⟩
+      tabulate (var ∘ (Fin.punchIn x) ∘ (punchIn⋆ φ)) ∎
