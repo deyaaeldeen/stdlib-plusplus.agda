@@ -201,3 +201,11 @@ module AdditionalLemmas {T} (lemmas : TermLemmas T) where
     ≡⟨ cong (lookup i) map-weaken-⊙-sub ⟩
       lookup i φ
     ∎
+
+  tabulate-var≡id : ∀ {i} → tabulate {i} var ≡ id
+  tabulate-var≡id {zero} = refl
+  tabulate-var≡id {suc i} = cong (_∷_ (var zero)) (begin
+    tabulate (var ∘ suc)      ≡⟨ tabulate-cong (λ _ → sym weaken-var) ⟩
+    tabulate (weaken ∘ var)   ≡⟨ tabulate-∘ weaken var ⟩
+    map weaken (tabulate var) ≡⟨ cong (map weaken) tabulate-var≡id ⟩
+    map weaken id ∎)
