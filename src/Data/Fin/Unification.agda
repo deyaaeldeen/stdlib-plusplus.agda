@@ -25,6 +25,7 @@ module _ {ℓ}(T : Pred ℕ ℓ) where
 
 {- operations on Subs -}
 module _ {ℓ}{T : Pred ℕ ℓ} where
+  infixl 9 _⊙_
   _⊙_ : ∀ {m n u} → Sub T m n → Sub T n u → Sub T m u
   anil ⊙ σ = σ
   (ρ asnoc t / x) ⊙ σ = (ρ ⊙ σ) asnoc t / x
@@ -65,6 +66,7 @@ module Unifiers {ℓ}{T : Pred ℕ ℓ}(tms : Terms T)(simple : Simple T) where
     asub anil = var
     asub (ρ asnoc t / x) = bind (asub ρ) ∘ (t for x)
 
+    infixl 8 _/_
     _/_ : ∀ {m n} → T m → Sub T m n → T n
     t / ρ = bind (asub ρ) t
 
@@ -82,6 +84,14 @@ module Unifiers {ℓ}{T : Pred ℕ ℓ}(tms : Terms T)(simple : Simple T) where
     flex-rigid {suc m} x t with check x t
     ... | just t' = just (_ , anil asnoc t' / x)
     ... | nothing = nothing
+
+  {- iterated to parallel substitutions -}
+  module _ where
+    import Data.Fin.Substitution as Par
+    open import Data.Vec
+
+    par : ∀ {n m}(ρ : Sub T n m) → Par.Sub T n m
+    par ρ = tabulate (asub ρ)
 
 record Unification {ℓ}(T : Pred ℕ ℓ) : Set ℓ where
   field
