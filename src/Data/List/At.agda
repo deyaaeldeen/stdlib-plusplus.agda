@@ -60,13 +60,13 @@ all-lookup {l = x ∷ l} {suc i} p (px ∷ q) = all-lookup p q
 ∷ʳ[length] [] y = refl
 ∷ʳ[length] (x ∷ Σ) y = ∷ʳ[length] Σ y
 
-pointwise-lookup : ∀ {a b ℓ A B P l m i x} → Rel {a} {b} {ℓ} {A} {B} P l m →
+pointwise-lookup : ∀ {a b ℓ A B P l m i x} → Pointwise {a} {b} {ℓ} {A} {B} P l m →
                     l [ i ]= x → ∃ λ y → m [ i ]= y × P x y
 pointwise-lookup [] ()
 pointwise-lookup {i = zero} (x∼y ∷ q) refl = _ , refl , x∼y
 pointwise-lookup {i = suc i} (x∼y ∷ q) p = pointwise-lookup q p
 
-pointwise-lookup′ : ∀ {a b ℓ A B P l m i x y} → Rel {a} {b} {ℓ} {A} {B} P l m →
+pointwise-lookup′ : ∀ {a b ℓ A B P l m i x y} → Pointwise {a} {b} {ℓ} {A} {B} P l m →
                     l [ i ]= x → m [ i ]= y → P x y
 pointwise-lookup′ [] () q
 pointwise-lookup′ {i = zero} (x∼y ∷ z) refl refl = x∼y
