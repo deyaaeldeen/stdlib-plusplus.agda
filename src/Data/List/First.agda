@@ -31,7 +31,7 @@ find P dec [] = no (λ{ (e , ()) })
 find P dec (x ∷ v) with dec x
 find P dec (x ∷ v) | yes px = yes (x , here px)
 find P dec (x ∷ v) | no ¬px with find P dec v
-find P dec (x ∷ v) | no ¬px | yes firstv = yes (, there x ¬px (proj₂ firstv))
+find P dec (x ∷ v) | no ¬px | yes firstv = yes (_ , there x ¬px (proj₂ firstv))
 find P dec (x ∷ v) | no ¬px | no ¬firstv = no $ helper ¬px ¬firstv
   where
     helper : ¬ (P x) → ¬ (∃ λ e → First P e v) → ¬ (∃ λ e → First P e (x ∷ v))
