@@ -1,7 +1,7 @@
 module Data.List.All.Properties.Extra {a}{A : Set a} where
 
 open import Relation.Binary.PropositionalEquality
-open import Data.Nat
+open import Data.Nat hiding (erase)
 open import Data.Fin
 open import Data.List as List hiding (reverse)
 open import Data.List.Any hiding (tail)
