@@ -30,14 +30,14 @@ module _ {ℓ}{T : Pred ℕ ℓ} where
   anil ⊙ σ = σ
   (ρ asnoc t / x) ⊙ σ = (ρ ⊙ σ) asnoc t / x
 
-record Terms {ℓ}(T : Pred ℕ ℓ) : Set ℓ where
+record OnTerms {ℓ}(T : Pred ℕ ℓ) : Set ℓ where
   field
     bind   : ∀ {m n} → (Fin m → T n) → T m → T n
     check  : ∀ {n} → Fin (suc n) → T (suc n) → Maybe (T n)
 
-module Unifiers {ℓ}{T : Pred ℕ ℓ}(tms : Terms T)(simple : Simple T) where
+module Unifiers {ℓ}{T : Pred ℕ ℓ}(tms : OnTerms T)(simple : Simple T) where
   open Simple simple using (var; weaken)
-  open Terms tms public
+  open OnTerms tms public
 
   {- lifting iterated substitutions -}
   module _ where
@@ -95,7 +95,7 @@ module Unifiers {ℓ}{T : Pred ℕ ℓ}(tms : Terms T)(simple : Simple T) where
 
 record Unification {ℓ}(T : Pred ℕ ℓ) : Set ℓ where
   field
-    tms    : Terms T
+    tms    : OnTerms T
     simple : Simple T
 
   open Unifiers tms simple public

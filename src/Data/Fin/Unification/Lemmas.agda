@@ -21,7 +21,7 @@ open import Relation.Nullary
 open import Relation.Binary.PropositionalEquality
 open ≡-Reasoning
 
-module Lemmas₀ {ℓ T}(tms : Terms {ℓ} T)(simple : Par.Simple T) where
+module Lemmas₀ {ℓ T}(tms : OnTerms {ℓ} T)(simple : Par.Simple T) where
   open Simple simple using (var)
   open Unifiers tms simple
 
@@ -41,7 +41,7 @@ module Lemmas₀ {ℓ T}(tms : Terms {ℓ} T)(simple : Par.Simple T) where
   ... | yes eq = ⊥-elim (punchInᵢ≢i _ _ (sym eq))
   ... | no ¬eq = cong var (trans (punchOut-cong x refl) (punchOut-punchIn x))
 
-record Lemmas₁ {ℓ T}(tms : Terms {ℓ} T)(simple : Par.Simple T) : Set ℓ where
+record Lemmas₁ {ℓ T}(tms : OnTerms {ℓ} T)(simple : Par.Simple T) : Set ℓ where
   open Simple simple using (var)
   open Unifiers tms simple
   open Lemmas₀ tms simple public
@@ -61,7 +61,7 @@ record Lemmas₁ {ℓ T}(tms : Terms {ℓ} T)(simple : Par.Simple T) : Set ℓ w
     ≡⟨ cong (bind (asub ρ)) (for-punchIn x y) ⟩ bind (asub ρ) (var y)
     ≡⟨ /-var y ⟩ asub ρ y ∎
 
-record Lemmas₂ {T}(tms : Terms T)(lms : TermLemmas T) : Set₁ where
+record Lemmas₂ {T}(tms : OnTerms T)(lms : TermLemmas T) : Set₁ where
   open TermLemmas lms using (simple; termSubst; ⊙-assoc; id-⊙) renaming (/-⊙ to //-⊙; var-/ to var-//)
   open Simple simple using (var)
   open Unifiers tms simple
@@ -172,7 +172,7 @@ record Lemmas₂ {T}(tms : Terms T)(lms : TermLemmas T) : Set₁ where
   /-≡ˡ : ∀ {n m} t₁ t₂ (φ : Sub T n m) → t₁ // par φ ≡ t₂ // par φ → t₁ / φ ≡ t₂ / φ
   /-≡ˡ t₁ t₂ φ = subst₂ _≡_ (sym $ /-par φ t₁) (sym $ /-par φ t₂)
 
-record Lemmas₃ {T}(tms : Terms T) : Set₁ where
+record Lemmas₃ {T}(tms : OnTerms T) : Set₁ where
   {- parallel substitution + lemmas -}
   field
     lms : TermLemmas T
