@@ -30,6 +30,11 @@ module Lemmas₀ {ℓ T}(tms : Terms {ℓ} T)(simple : Par.Simple T) where
   ... | yes eq = refl
   ... | no ¬eq = ⊥-elim (¬eq refl)
 
+  t-for-not-x : ∀ {v}{t : T v}{x y} → (¬eq : x ≢ y) → (t for x) y ≡ var (punchOut ¬eq)
+  t-for-not-x {x = x}{y} ¬eq with x Fin.≟ y
+  ... | yes eq = ⊥-elim (¬eq eq)
+  ... | no ¬eq' = cong var (punchOut-cong x refl)
+
   {- substituting for a punched in' variable dissappears -}
   for-punchIn : ∀ {v}{t : T v} x y → (t for x) (punchIn x y) ≡ var y
   for-punchIn x y with x Fin.≟ (punchIn x y)
