@@ -1,7 +1,7 @@
 module Data.List.All.Properties.Extra {a}{A : Set a} where
 
 open import Relation.Binary.PropositionalEquality
-open import Data.Nat hiding (erase)
+open import Data.Nat
 open import Data.Fin
 open import Data.List as List hiding (reverse)
 open import Data.List.Any hiding (tail)
@@ -96,7 +96,7 @@ erase f [] = []
 erase f (px ∷ xs₁) = f px ∷ erase f xs₁
 
 pop₁ : ∀ {x : A}{p xs}{P : A → Set p} → All P (x ∷ xs) → P x × All P xs
-pop₁ st = head st , tail st
+pop₁ st = All.head st , All.tail st
 
 open import Data.List.Properties
 popₙ : ∀ (as : List A){p xs}{P : A → Set p} → All P (as ++ xs) → All P (List.reverse as) × All P xs
