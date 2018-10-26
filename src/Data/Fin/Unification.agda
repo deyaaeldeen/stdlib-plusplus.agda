@@ -38,6 +38,7 @@ record OnTerms {ℓ}(T : Pred ℕ ℓ) : Set ℓ where
 module Unifiers {ℓ}{T : Pred ℕ ℓ}(tms : OnTerms T)(simple : Simple T) where
   open Simple simple using (var; weaken)
   open OnTerms tms public
+  open import Data.Fin.Substitution.Extra simple
 
   {- lifting iterated substitutions -}
   module _ where
@@ -57,11 +58,6 @@ module Unifiers {ℓ}{T : Pred ℕ ℓ}(tms : OnTerms T)(simple : Simple T) wher
 
   {- functional interpretation of iterated substitution -}
   module _ where
-    _for_ : ∀ {v} → T v → Fin (suc v) → Fin (suc v) → T v
-    (t for x) y with x Fin.≟ y
-    ... | yes eq = t
-    ... | no ¬eq = var (punchOut ¬eq)
-
     asub : ∀ {m n} → Sub T m n → Fin m → T n
     asub anil = var
     asub (ρ asnoc t / x) = bind (asub ρ) ∘ (t for x)

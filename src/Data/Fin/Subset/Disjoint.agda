@@ -30,5 +30,6 @@ module _ where
   open import Function
   open import Data.Bool
 
+  infixl 7 _⊝_
   _⊝_ : ∀ {n} → (l r : Subset n) → Subset n
   l ⊝ r = zipWith (λ l r → if r then false else l) l r

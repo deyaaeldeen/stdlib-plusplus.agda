@@ -23,6 +23,7 @@ open ≡-Reasoning
 
 module Lemmas₀ {ℓ T}(tms : OnTerms {ℓ} T)(simple : Par.Simple T) where
   open Simple simple using (var)
+  open import Data.Fin.Substitution.Extra simple
   open Unifiers tms simple
 
   t-for-x : ∀ {v}{t : T v} x → (t for x) x ≡ t
@@ -51,6 +52,7 @@ record Lemmas₁ {ℓ T}(tms : OnTerms {ℓ} T)(simple : Par.Simple T) : Set ℓ
     /-anil-vanishes : ∀ {n}{t : T n} → t / anil ≡ t
     /-⊙ : ∀ {n m l} t (ρ₁ : Sub T n m)(ρ₂ : Sub T m l) → t / ρ₁ / ρ₂ ≡ t / ρ₁ ⊙ ρ₂
 
+  open import Data.Fin.Substitution.Extra simple
   open ≡-Reasoning
 
   {- certain asnoc's disappear on punchIn -}
@@ -75,12 +77,7 @@ record Lemmas₂ {T}(tms : OnTerms T)(lms : TermLemmas T) : Set₁ where
   field
     /-par : ∀ {n m} (ρ : Sub T n m) t → (t / ρ) ≡ t [↦ ρ ]
 
-  {- useful parallel substitutions -}
-  wk-at : ∀ {n} → Fin (ℕ.suc n) → Par.Sub T n (ℕ.suc n)
-  wk-at x = tabulate (var ∘ punchIn x)
-
-  sub_at_ : ∀ {n} → T n → Fin (ℕ.suc n) → Par.Sub T (ℕ.suc n) n
-  sub t at x = tabulate (t for x)
+  open import Data.Fin.Substitution.Extra simple
 
   {- lemma about looking up in a converted iterated substitution -}
   lookup-par : ∀ {n m} x (ρ : Sub T n m) → lookup x (par ρ) ≡ asub ρ x
@@ -191,6 +188,7 @@ record Lemmas₃ {T}(tms : OnTerms T) : Set₁ where
 
   open Lemmas₁ super₁ public
   open Lemmas₂ super₂ public
+  open import Data.Fin.Substitution.Extra simple
 
   ⊙-punchIn⋆ : ∀ {n m l} x (ρ : Sub T n m)(φ : Sub T m l) → (asub (ρ ⊙ φ)) (punchIn⋆ ρ x) ≡ (asub φ x)
   ⊙-punchIn⋆ x anil φ = refl
