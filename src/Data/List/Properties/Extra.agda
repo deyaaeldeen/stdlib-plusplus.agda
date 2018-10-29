@@ -35,3 +35,8 @@ _[_]≔'_ : ∀ {x} → (l : List A) → x ∈ l → A → List A
 drop-prefix : ∀ (l m : List A) → drop (length l) (l ++ m) ≡ m
 drop-prefix [] m = refl
 drop-prefix (x ∷ l) m = drop-prefix l m
+
+foldr-map : ∀ {B C : Set a}{f : A → B}{g : B → C → C}{e} l →
+            foldr g e (map f l) ≡ foldr (λ i a → g (f i) a) e l
+foldr-map [] = refl
+foldr-map {f = f}{g} (x ∷ l) = cong (g (f x)) (foldr-map l)

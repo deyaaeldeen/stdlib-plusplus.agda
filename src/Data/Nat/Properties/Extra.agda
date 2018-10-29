@@ -6,6 +6,11 @@ open import Data.Nat.Properties
 open import Relation.Binary.PropositionalEquality
 open ≡-Reasoning
 open import Data.Empty
+open import Data.Product
+
+≥-+ : ∀ {m n} → m ≥ n → ∃ λ i → m ≡ i + n
+≥-+ p with ≤⇒≤″ p
+... | less-than-or-equal {i} refl = i , +-comm _ i
 
 ≤′-unique : ∀ {i u} (p q : i ≤′ u) → p ≡ q
 ≤′-unique ≤′-refl ≤′-refl = refl

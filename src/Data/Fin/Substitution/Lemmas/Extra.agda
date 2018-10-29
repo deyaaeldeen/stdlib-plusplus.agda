@@ -209,3 +209,17 @@ module AdditionalLemmas {T} (lemmas : TermLemmas T) where
     tabulate (weaken ∘ var)   ≡⟨ tabulate-∘ weaken var ⟩
     map weaken (tabulate var) ≡⟨ cong (map weaken) tabulate-var≡id ⟩
     map weaken id ∎)
+
+  open import Relation.Binary.HeterogeneousEquality as H using (refl; _≅_)
+  wk⋆-+ : ∀ {n} i j → wk⋆ i {n} ⊙ wk⋆ j ≅ wk⋆ (j + i)
+  wk⋆-+ i zero = H.≡-to-≅ ⊙-id
+  wk⋆-+ {n} i (suc j) =
+    HR.begin
+      wk⋆ i ⊙ wk⋆ (suc j) HR.≡⟨ cong (λ ρ → _ ⊙ ρ) map-weaken ⟩
+      wk⋆ i ⊙ (wk⋆ j ⊙ wk)  HR.≡⟨ ⊙-assoc ⟩
+      (wk⋆ i ⊙ wk⋆ j) ⊙ wk  HR.≅⟨ H.icong (λ x → Sub T n x) (sym $ +-assoc j i n) (_⊙ wk) (wk⋆-+ i j) ⟩
+      wk⋆ (j + i)   ⊙ wk  HR.≡⟨ sym map-weaken ⟩
+      wk⋆ (suc (j + i))   HR.∎
+    where
+      open import Data.Nat.Properties
+      module HR = H.≅-Reasoning
