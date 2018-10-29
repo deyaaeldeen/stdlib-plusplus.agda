@@ -21,31 +21,10 @@ open import Relation.Nullary
 open import Relation.Binary.PropositionalEquality
 open ≡-Reasoning
 
-module Lemmas₀ {ℓ T}(tms : OnTerms {ℓ} T)(simple : Par.Simple T) where
-  open Simple simple using (var)
-  open import Data.Fin.Substitution.Extra simple
-  open Unifiers tms simple
-
-  t-for-x : ∀ {v}{t : T v} x → (t for x) x ≡ t
-  t-for-x x with x Fin.≟ x
-  ... | yes eq = refl
-  ... | no ¬eq = ⊥-elim (¬eq refl)
-
-  t-for-not-x : ∀ {v}{t : T v}{x y} → (¬eq : x ≢ y) → (t for x) y ≡ var (punchOut ¬eq)
-  t-for-not-x {x = x}{y} ¬eq with x Fin.≟ y
-  ... | yes eq = ⊥-elim (¬eq eq)
-  ... | no ¬eq' = cong var (punchOut-cong x refl)
-
-  {- substituting for a punched in' variable dissappears -}
-  for-punchIn : ∀ {v}{t : T v} x y → (t for x) (punchIn x y) ≡ var y
-  for-punchIn x y with x Fin.≟ (punchIn x y)
-  ... | yes eq = ⊥-elim (punchInᵢ≢i _ _ (sym eq))
-  ... | no ¬eq = cong var (trans (punchOut-cong x refl) (punchOut-punchIn x))
-
 record Lemmas₁ {ℓ T}(tms : OnTerms {ℓ} T)(simple : Par.Simple T) : Set ℓ where
   open Simple simple using (var)
   open Unifiers tms simple
-  open Lemmas₀ tms simple public
+  open ForLemmas simple
 
   field
     /-var : ∀ {n m}(x : Fin n){ρ : Fin n → T m} → bind ρ (var x) ≡ ρ x
@@ -67,7 +46,7 @@ record Lemmas₂ {T}(tms : OnTerms T)(lms : TermLemmas T) : Set₁ where
   open TermLemmas lms using (simple; termSubst; ⊙-assoc; id-⊙) renaming (/-⊙ to //-⊙; var-/ to var-//)
   open Simple simple using (var)
   open Unifiers tms simple
-  open Lemmas₀ tms simple
+  open ForLemmas simple
   open AdditionalLemmas lms
   open TermSubst termSubst using () renaming (_⊙_ to _par-⊙_; _/_ to _//_; id to par-id)
 

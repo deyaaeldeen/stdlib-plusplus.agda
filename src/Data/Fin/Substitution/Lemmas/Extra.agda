@@ -2,20 +2,53 @@ module Data.Fin.Substitution.Lemmas.Extra where
 
 import Function as Fun
 open import Data.Nat
-open import Data.Fin hiding (_+_)
+open import Data.Fin as Fin hiding (_+_)
+open import Data.Fin.Properties
 open import Data.Fin.Substitution
 open import Data.Fin.Substitution.Lemmas
 open import Data.Vec.Properties
 open import Data.Vec
 open import Data.Star using (_◅_ ; ε)
+open import Data.Empty
 open import Function hiding (id)
 open import Relation.Binary.PropositionalEquality
+open import Relation.Nullary
 open ≡-Reasoning
+
+module ForLemmas {ℓ}{T : ℕ → Set ℓ}(simple : Simple T) where
+  open Simple simple
+  open import Data.Fin.Substitution.Extra simple
+
+  t-for-x : ∀ {v}{t : T v} x → (t for x) x ≡ t
+  t-for-x x with x Fin.≟ x
+  ... | yes eq = refl
+  ... | no ¬eq = ⊥-elim (¬eq refl)
+
+  t-for-not-x : ∀ {v}{t : T v}{x y} → (¬eq : x ≢ y) → (t for x) y ≡ var (punchOut ¬eq)
+  t-for-not-x {x = x}{y} ¬eq with x Fin.≟ y
+  ... | yes eq = ⊥-elim (¬eq eq)
+  ... | no ¬eq' = cong var (punchOut-cong x refl)
+
+  {- substituting for a punched in' variable dissappears -}
+  for-punchIn : ∀ {v}{t : T v} x y → (t for x) (punchIn x y) ≡ var y
+  for-punchIn x y with x Fin.≟ (punchIn x y)
+  ... | yes eq = ⊥-elim (punchInᵢ≢i _ _ (sym eq))
+  ... | no ¬eq = cong var (trans (punchOut-cong x refl) (punchOut-punchIn x))
 
 module AdditionalLemmas {T} (lemmas : TermLemmas T) where
 
   open TermLemmas lemmas
   module Var = VarSubst
+
+  open import Data.Fin.Substitution.Extra simple
+  open ForLemmas simple
+
+  sub-at : ∀ {n}(x : Fin (suc n)){t} → (var x) / (sub t at x) ≡ t
+  sub-at x {t} = begin
+    (var x) / (sub t at x) ≡⟨ var-/ ⟩
+    lookup x (sub t at x)  ≡⟨ lookup∘tabulate (t for x) x ⟩
+    (t for x) x            ≡⟨ t-for-x x ⟩
+    t ∎
 
   -- Weakening commutes with single-variable substitution
   weaken-sub : ∀ {n} (a : T (1 + n)) (b : T n) →
