@@ -43,8 +43,8 @@ module AdditionalLemmas {T} (lemmas : TermLemmas T) where
   open import Data.Fin.Substitution.Extra simple
   open ForLemmas simple
 
-  sub-at : ∀ {n}(x : Fin (suc n)){t} → (var x) / (sub t at x) ≡ t
-  sub-at x {t} = begin
+  sub-at-x : ∀ {n}(x : Fin (suc n)) t → (var x) / (sub t at x) ≡ t
+  sub-at-x x t = begin
     (var x) / (sub t at x) ≡⟨ var-/ ⟩
     lookup x (sub t at x)  ≡⟨ lookup∘tabulate (t for x) x ⟩
     (t for x) x            ≡⟨ t-for-x x ⟩
