@@ -89,6 +89,19 @@ module Unifiers {ℓ}{T : Pred ℕ ℓ}(tms : OnTerms T)(simple : Simple T) wher
     par : ∀ {n m}(ρ : Sub T n m) → Par.Sub T n m
     par ρ = tabulate (asub ρ)
 
+  {- most generalness -}
+  record IsMGU {n m} (φ : Sub T n m) t₁ t₂ : Set ℓ where
+    field
+      unifies : t₁ / φ ≡ t₂ / φ
+      minimal : ∀ {m'} (θ : Sub T n m') → t₁ / θ ≡ t₂ / θ → ∃ λ ψ → θ ≡ φ ⊙ ψ
+
+  record MGU {n} t₁ t₂ : Set ℓ where
+    constructor mgu
+    field
+      {m}    : ℕ
+      φ      : Sub T n m
+      is-mgu : IsMGU φ t₁ t₂
+
 record Unification {ℓ}(T : Pred ℕ ℓ) : Set ℓ where
   field
     tms    : OnTerms T

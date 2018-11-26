@@ -5,21 +5,31 @@ open import Function
 open import Level renaming (zero to 0ℓ)
 open import Data.Nat hiding (_⊔_)
 open import Data.Nat.Properties
-open import Data.Fin as Fin hiding (_+_)
-open import Data.Fin.Properties
+open import Data.Fin as Fin hiding (_+_; _≤_)
 open import Data.Fin.Unification
 open import Data.Fin.Substitution as Par using (Simple; TermSubst)
 open import Data.Fin.Substitution.Lemmas as ParLem using (TermLemmas)
 open import Data.Fin.Substitution.Lemmas.Extra
+open import Data.Fin.Properties
 open import Data.Product
 open import Data.Vec as Vec
 open import Data.Vec.Properties
 open import Data.Maybe
 open import Data.Empty
+open import Data.Nat
 
 open import Relation.Nullary
+open import Relation.Unary using (Pred)
 open import Relation.Binary.PropositionalEquality
 open ≡-Reasoning
+
+module Lemmas₀ {ℓ} {T : Pred ℕ ℓ} where
+
+  open import Data.Nat.Properties as ℕP
+
+  mono : ∀ {n m} → Sub T n m → m ≤ n
+  mono anil            = ℕP.≤-refl
+  mono (p asnoc _ / _) = ℕP.≤-trans (mono p) (n≤1+n _)
 
 record Lemmas₁ {ℓ T}(tms : OnTerms {ℓ} T)(simple : Par.Simple T) : Set ℓ where
   open Simple simple using (var)
