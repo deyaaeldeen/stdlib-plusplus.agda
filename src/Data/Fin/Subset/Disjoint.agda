@@ -1,7 +1,7 @@
 module Data.Fin.Subset.Disjoint where
 
 open import Data.Nat
-open import Data.Vec hiding (_∈_)
+open import Data.Vec
 open import Data.Fin
 open import Data.List as List hiding (zipWith)
 open import Data.Fin.Subset

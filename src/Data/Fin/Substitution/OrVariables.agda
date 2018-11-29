@@ -3,7 +3,7 @@ open import Data.Nat
 module Data.Fin.Substitution.OrVariables (T : Set) where
 
 open import Function hiding (id; _⟨_⟩_)
-open import Data.Vec as Vec hiding (_∈_; _++_; [_])
+open import Data.Vec as Vec hiding (_++_; [_])
 open import Data.Fin using (Fin; zero; suc)
 open import Data.Fin.Substitution
 open import Data.Fin.Substitution.Lemmas

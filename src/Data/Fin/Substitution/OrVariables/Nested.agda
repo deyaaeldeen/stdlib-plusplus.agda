@@ -4,7 +4,7 @@ open import Data.Fin.Substitution.Lemmas
 module Data.Fin.Substitution.OrVariables.Nested (T₁ T₂ : ℕ → Set)(app : AppLemmas T₁ T₂) where
 
 open import Function hiding (id; _⟨_⟩_)
-open import Data.Vec as Vec hiding (_∈_; _++_; [_])
+open import Data.Vec as Vec hiding (_++_; [_])
 open import Data.Fin using (Fin; zero; suc)
 open import Data.Fin.Substitution
 open import Data.Sum renaming (inj₁ to ground; inj₂ to var)

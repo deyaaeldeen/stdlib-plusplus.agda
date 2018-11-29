@@ -4,7 +4,7 @@ open import Function
 open import Data.List
 open import Data.List.Any
 open import Data.List.Membership.Propositional
-open import Data.List.Relation.Sublist.Propositional
+open import Data.List.Relation.Subset.Propositional
 
 open import Relation.Binary.PropositionalEquality
 
