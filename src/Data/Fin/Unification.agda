@@ -102,6 +102,8 @@ module Unifiers {ℓ}{T : Pred ℕ ℓ}(tms : OnTerms T)(simple : Simple T) wher
       φ      : Sub T n m
       is-mgu : IsMGU φ t₁ t₂
 
+    open IsMGU is-mgu public
+
 record Unification {ℓ}(T : Pred ℕ ℓ) : Set ℓ where
   field
     tms    : OnTerms T
