@@ -32,7 +32,7 @@ module Lemmas₀ {ℓ} {T : Pred ℕ ℓ} where
   mono (p asnoc _ / _) = ℕP.≤-trans (mono p) (n≤1+n _)
 
 record Lemmas₁ {ℓ T}(tms : OnTerms {ℓ} T)(simple : Par.Simple T) : Set ℓ where
-  open Simple simple using (var)
+  open Simple simple using (var; _for_)
   open Unifiers tms simple
   open ForLemmas simple
 
@@ -41,7 +41,6 @@ record Lemmas₁ {ℓ T}(tms : OnTerms {ℓ} T)(simple : Par.Simple T) : Set ℓ
     /-anil-vanishes : ∀ {n}{t : T n} → t / anil ≡ t
     /-⊙ : ∀ {n m l} t (ρ₁ : Sub T n m)(ρ₂ : Sub T m l) → t / ρ₁ / ρ₂ ≡ t / ρ₁ ⊙ ρ₂
 
-  open import Data.Fin.Substitution.Extra simple
   open ≡-Reasoning
 
   {- certain asnoc's disappear on punchIn -}
@@ -54,7 +53,7 @@ record Lemmas₁ {ℓ T}(tms : OnTerms {ℓ} T)(simple : Par.Simple T) : Set ℓ
 
 record Lemmas₂ {T}(tms : OnTerms T)(lms : TermLemmas T) : Set₁ where
   open TermLemmas lms using (simple; termSubst; ⊙-assoc; id-⊙) renaming (/-⊙ to //-⊙; var-/ to var-//)
-  open Simple simple using (var)
+  open Simple simple using (var; sub_at_; _for_; wk-at)
   open Unifiers tms simple
   open ForLemmas simple
   open AdditionalLemmas lms
@@ -65,8 +64,6 @@ record Lemmas₂ {T}(tms : OnTerms T)(lms : TermLemmas T) : Set₁ where
 
   field
     /-par : ∀ {n m} (ρ : Sub T n m) t → (t / ρ) ≡ t [↦ ρ ]
-
-  open import Data.Fin.Substitution.Extra simple
 
   {- lemma about looking up in a converted iterated substitution -}
   lookup-par : ∀ {n m} x (ρ : Sub T n m) → lookup x (par ρ) ≡ asub ρ x
@@ -164,7 +161,7 @@ record Lemmas₃ {T}(tms : OnTerms T) : Set₁ where
     lms : TermLemmas T
 
   open TermLemmas lms using (simple; termSubst; var-/; ⊙-assoc; id-⊙) renaming (/-⊙ to //-⊙)
-  open Simple simple using (var)
+  open Simple simple using (var; _for_; wk-at)
   open Unifiers tms simple
   open AdditionalLemmas lms
   module TmPar = TermSubst termSubst
@@ -177,7 +174,6 @@ record Lemmas₃ {T}(tms : OnTerms T) : Set₁ where
 
   open Lemmas₁ super₁ public
   open Lemmas₂ super₂ public
-  open import Data.Fin.Substitution.Extra simple
 
   ⊙-punchIn⋆ : ∀ {n m l} x (ρ : Sub T n m)(φ : Sub T m l) → (asub (ρ ⊙ φ)) (punchIn⋆ ρ x) ≡ (asub φ x)
   ⊙-punchIn⋆ x anil φ = refl

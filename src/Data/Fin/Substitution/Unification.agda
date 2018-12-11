@@ -1,6 +1,7 @@
 open import Data.Nat
 open import Relation.Unary
 open import Data.Fin.Substitution
+open import Data.Fin.Substitution.Lemmas using (AppLemmas)
 
 module Data.Fin.Substitution.Unification {ℓ} {T₁ : Pred ℕ ℓ} (app : Application T₁ T₁) where
 
@@ -26,7 +27,7 @@ module _ where
       unifier   : Sub T₁ n m 
       unifies   : IsUnifier unifier t₁ t₂
 
-  _≈≈_ : ∀ {n } → T₁ n → T₁ n → Set ℓ
+  _≈≈_ : ∀ {n} → T₁ n → T₁ n → Set ℓ
   t₁ ≈≈ t₂ = Unifier t₁ t₂
 
   _≈/≈_ : ∀ {n} → T₁ n → T₁ n → Set ℓ

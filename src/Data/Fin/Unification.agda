@@ -36,9 +36,8 @@ record OnTerms {ℓ}(T : Pred ℕ ℓ) : Set ℓ where
     check  : ∀ {n} → Fin (suc n) → T (suc n) → Maybe (T n)
 
 module Unifiers {ℓ}{T : Pred ℕ ℓ}(tms : OnTerms T)(simple : Simple T) where
-  open Simple simple using (var; weaken)
+  open Simple simple using (var; weaken; _for_)
   open OnTerms tms public
-  open import Data.Fin.Substitution.Extra simple
 
   {- lifting iterated substitutions -}
   module _ where
