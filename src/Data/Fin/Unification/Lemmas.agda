@@ -32,9 +32,9 @@ module Lemmas₀ {ℓ} {T : Pred ℕ ℓ} where
   mono (p asnoc _ / _) = ℕP.≤-trans (mono p) (n≤1+n _)
 
 record Lemmas₁ {ℓ T}(tms : OnTerms {ℓ} T)(simple : Par.Simple T) : Set ℓ where
+  open ParLem.Lemmas₀ record { simple = simple } public hiding (simple)
   open Simple simple using (var; _for_)
   open Unifiers tms simple
-  open ForLemmas simple
 
   field
     /-var : ∀ {n m}(x : Fin n){ρ : Fin n → T m} → bind ρ (var x) ≡ ρ x
@@ -52,10 +52,9 @@ record Lemmas₁ {ℓ T}(tms : OnTerms {ℓ} T)(simple : Par.Simple T) : Set ℓ
     ≡⟨ /-var y ⟩ asub ρ y ∎
 
 record Lemmas₂ {T}(tms : OnTerms T)(lms : TermLemmas T) : Set₁ where
-  open TermLemmas lms using (simple; termSubst; ⊙-assoc; id-⊙) renaming (/-⊙ to //-⊙; var-/ to var-//)
+  open TermLemmas lms using (simple; termSubst; ⊙-assoc; id-⊙; t-for-x; for-punchIn) renaming (/-⊙ to //-⊙; var-/ to var-//)
   open Simple simple using (var; sub_at_; _for_; wk-at)
   open Unifiers tms simple
-  open ForLemmas simple
   open AdditionalLemmas lms
   open TermSubst termSubst using () renaming (_⊙_ to _par-⊙_; _/_ to _//_; id to par-id)
 
