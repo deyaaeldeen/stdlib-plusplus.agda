@@ -59,8 +59,7 @@ module AdditionalLemmas {T} (lemmas : TermLemmas T) where
     a / wk / (sub b) ≡⟨ wk-sub-vanishes a ⟩
     a ∎
 
-  -- make /Var usable from lemmas
-  open TermSubst termSubst using (_/Var_) public
+  open TermSubst termSubst using (_/Var_)
 
   private
     var⋆weaken : ∀ {n} → _≗_ {A = Fin n} (var ∘ suc) (weaken ∘ var)
