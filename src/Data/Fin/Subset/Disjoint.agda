@@ -23,13 +23,3 @@ module _ {n} where
   _⊇⟨_⟩_ : Subset n → (l : ℕ) → Vec (Fin n) l → Set
   xs ⊇⟨ l ⟩ ys = All (λ y → y ∈ xs) ys
     where open import Data.Vec.All
-
--- removing from support
-module _ where
-
-  open import Function
-  open import Data.Bool
-
-  infixl 7 _⊝_
-  _⊝_ : ∀ {n} → (l r : Subset n) → Subset n
-  l ⊝ r = zipWith (λ l r → if r then false else l) l r
